@@ -17,5 +17,3 @@ public class MainControllerImpl implements MainController {
         return weatherStack.currentWeather(city);
     }
 }
-
-//@RequestParam(name = "city", defaultValue = "no") String city
