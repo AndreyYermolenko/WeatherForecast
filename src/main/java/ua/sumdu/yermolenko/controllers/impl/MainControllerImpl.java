@@ -5,12 +5,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ua.sumdu.yermolenko.controllers.interfaces.MainController;
-import ua.sumdu.yermolenko.services.interfaces.WeatherStack;
+import ua.sumdu.yermolenko.services.interfaces.WeatherStackService;
 
 @RestController
 public class MainControllerImpl implements MainController {
     @Autowired
-    private WeatherStack weatherStack;
+    private WeatherStackService weatherStack;
 
     @RequestMapping(path = "/weatherStack", method = RequestMethod.GET, params = "city")
     public String WeatherStackService(String city) {

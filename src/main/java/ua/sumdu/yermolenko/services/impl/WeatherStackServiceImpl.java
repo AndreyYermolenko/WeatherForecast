@@ -5,18 +5,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import ua.sumdu.yermolenko.model.WeatherData;
-import ua.sumdu.yermolenko.services.interfaces.WeatherStack;
+import ua.sumdu.yermolenko.services.interfaces.WeatherStackService;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
 @Service
-public class WeatherStackImpl implements WeatherStack {
+public class WeatherStackServiceImpl implements WeatherStackService {
     @Value("${api.key}")
-    private String api_key;
+    private String apiKey;
+    @Value("${weather.stack.url}")
+    String url;
 
     public String currentWeather(String city) {
-        String url = "http://api.weatherstack.com/current?access_key={api_key}&query={city}";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);
@@ -26,7 +27,7 @@ public class WeatherStackImpl implements WeatherStack {
                 HttpMethod.GET,
                 request,
                 String.class,
-                api_key, city
+                apiKey, city
         );
 
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -37,8 +38,7 @@ public class WeatherStackImpl implements WeatherStack {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            return "Request Successful" +"\n"
-                    + weatherData.toString();
+            return weatherData.toString();
         } else {
             return "Request Failed" +"\n"
                     + response.getStatusCode();
