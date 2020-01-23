@@ -15,7 +15,7 @@ import java.io.IOException;
 
 @Service
 public class WeatherStackServiceImpl implements WeatherStackService {
-    @Value("${api.key}")
+    @Value("${weather.stack.api.key}")
     private String apiKey;
     @Value("${weather.stack.url}")
     private String url;
@@ -41,7 +41,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherData.class);
-                weatherDataDto = weatherDataConverter.toJsonWeatherDataConverter(weatherData);
+                weatherDataDto = weatherDataConverter.toJsonWeatherDataConvert(weatherData);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -52,3 +52,6 @@ public class WeatherStackServiceImpl implements WeatherStackService {
         }
     }
 }
+
+//            JSONObject jsonObject = new JSONObject(response.getBody());
+//            String name = jsonObject.getJSONObject("request").getString("type");

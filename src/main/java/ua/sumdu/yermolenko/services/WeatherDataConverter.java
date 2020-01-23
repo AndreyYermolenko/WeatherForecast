@@ -6,7 +6,7 @@ import ua.sumdu.yermolenko.model.WeatherDataDto;
 
 @Component
 public class WeatherDataConverter {
-    public WeatherDataDto toJsonWeatherDataConverter(WeatherData inputData) {
+    public WeatherDataDto toJsonWeatherDataConvert(WeatherData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
 
         outputData.setName(inputData.getLocation().getName());
