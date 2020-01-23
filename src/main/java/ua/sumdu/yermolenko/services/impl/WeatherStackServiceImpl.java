@@ -52,6 +52,3 @@ public class WeatherStackServiceImpl implements WeatherStackService {
         }
     }
 }
-
-//            JSONObject jsonObject = new JSONObject(response.getBody());
-//            String name = jsonObject.getJSONObject("request").getString("type");

@@ -5,8 +5,12 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.services.interfaces.CityCoordinatesService;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 public class CityCoordinatesServiceImpl implements CityCoordinatesService {
@@ -15,7 +19,7 @@ public class CityCoordinatesServiceImpl implements CityCoordinatesService {
     @Value("${opencagedata.url}")
     String url;
 
-    public double[] getCityCoordinates(String city, String countryCode) throws JSONException, IllegalArgumentException {
+    public double[] getCityCoordinates(String city, String countryCode) throws JSONException, IllegalArgumentException, HttpStatusCodeException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);
@@ -27,7 +31,7 @@ public class CityCoordinatesServiceImpl implements CityCoordinatesService {
                 String.class,
                 city, apiKey, countryCode
         );
-        if (response.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode() == OK) {
             double[] cord = new double[2];
             JSONObject jsonObject = new JSONObject(response.getBody());
             cord[0] = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getDouble("lat");
@@ -38,7 +42,7 @@ public class CityCoordinatesServiceImpl implements CityCoordinatesService {
             }
             return cord;
         } else {
-            throw new RuntimeException();
+            throw new HttpServerErrorException(response.getStatusCode());
         }
     }
 }
