@@ -1,10 +1,13 @@
 package ua.sumdu.yermolenko.services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import ua.sumdu.yermolenko.model.WeatherData;
+import ua.sumdu.yermolenko.model.WeatherDataDto;
+import ua.sumdu.yermolenko.services.WeatherDataConverter;
 import ua.sumdu.yermolenko.services.interfaces.WeatherStackService;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,7 +18,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
     @Value("${api.key}")
     private String apiKey;
     @Value("${weather.stack.url}")
-    String url;
+    private String url;
+    @Autowired
+    private WeatherDataConverter weatherDataConverter;
 
     public String currentWeather(String city) {
         RestTemplate restTemplate = new RestTemplate();
@@ -33,12 +38,14 @@ public class WeatherStackServiceImpl implements WeatherStackService {
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
             WeatherData weatherData;
+            WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherData.class);
+                weatherDataDto = weatherDataConverter.toJsonWeatherDataConverter(weatherData);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            return weatherData.toString();
+            return weatherDataDto.toString();
         } else {
             return "Request Failed" +"\n"
                     + response.getStatusCode();
