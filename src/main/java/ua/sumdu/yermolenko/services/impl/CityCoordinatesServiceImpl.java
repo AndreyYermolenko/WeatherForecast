@@ -37,7 +37,8 @@ public class CityCoordinatesServiceImpl implements CityCoordinatesService {
             cord[0] = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getDouble("lat");
             cord[1] = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getDouble("lng");
             String typePlace = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("components").getString("_type");
-            if (!typePlace.equals("city")) {
+            if (!typePlace.equals("city") &&
+                !typePlace.equals("neighbourhood")) {
                 throw new IllegalArgumentException();
             }
             return cord;

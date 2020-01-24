@@ -1,6 +1,9 @@
 package ua.sumdu.yermolenko.services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.CDL;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -22,7 +25,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
     @Autowired
     private WeatherDataConverter weatherDataConverter;
 
-    public String currentWeather(String city) {
+    public String currentWeather(String city, String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);
@@ -32,7 +35,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 HttpMethod.GET,
                 request,
                 String.class,
-                apiKey, city
+                apiKey, city, countryCode
         );
 
         if (response.getStatusCode() == HttpStatus.OK) {
