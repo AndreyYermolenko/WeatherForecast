@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ua.sumdu.yermolenko.services.interfaces.DarkSkyService;
+import ua.sumdu.yermolenko.services.interfaces.WeatherBitService;
 import ua.sumdu.yermolenko.services.interfaces.OpenWeatherMapService;
 import ua.sumdu.yermolenko.services.interfaces.WeatherStackService;
 
@@ -16,6 +17,8 @@ public class MainController {
     private DarkSkyService darkSkyService;
     @Autowired
     private OpenWeatherMapService openWeatherMapService;
+    @Autowired
+    private WeatherBitService weatherBitService;
 
     @RequestMapping(path = "/weatherStack", method = RequestMethod.GET, params = {"city", "countryCode"})
     public String WeatherStackService(String city, String countryCode) {
@@ -30,5 +33,10 @@ public class MainController {
     @RequestMapping(path = "/openWeatherMapService", method = RequestMethod.GET, params = {"city", "countryCode"})
     public String OpenWeatherMapService(String city, String countryCode) {
         return openWeatherMapService.currentWeather(city, countryCode);
+    }
+
+    @RequestMapping(path = "/weatherBit", method = RequestMethod.GET, params = {"city", "countryCode"})
+    public String WeatherBitService(String city, String countryCode) {
+        return weatherBitService.currentWeather(city, countryCode);
     }
 }

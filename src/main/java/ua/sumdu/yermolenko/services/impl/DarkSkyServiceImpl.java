@@ -50,7 +50,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
             JSONObject jsonObject = new JSONObject(response.getBody());
-            String temperature = String.valueOf(jsonObject.getJSONObject("currently").getDouble("temperature"));
+            String temperature = String.valueOf(jsonObject
+                    .getJSONObject("currently")
+                    .getDouble("temperature"));
 
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);

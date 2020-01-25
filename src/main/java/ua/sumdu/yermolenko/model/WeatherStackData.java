@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class WeatherData {
+public class WeatherStackData {
     private Request request;
     private Location location;
     private Current current;

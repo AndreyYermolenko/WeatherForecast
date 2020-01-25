@@ -1,14 +1,11 @@
 package ua.sumdu.yermolenko.services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.CDL;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import ua.sumdu.yermolenko.model.WeatherData;
+import ua.sumdu.yermolenko.model.WeatherStackData;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.WeatherDataConverter;
 import ua.sumdu.yermolenko.services.interfaces.WeatherStackService;
@@ -18,9 +15,9 @@ import java.io.IOException;
 
 @Service
 public class WeatherStackServiceImpl implements WeatherStackService {
-    @Value("${weather.stack.api.key}")
+    @Value("${weatherstack.api.key}")
     private String apiKey;
-    @Value("${weather.stack.url}")
+    @Value("${weatherstack.url}")
     private String url;
     @Autowired
     private WeatherDataConverter weatherDataConverter;
@@ -40,11 +37,11 @@ public class WeatherStackServiceImpl implements WeatherStackService {
 
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
-            WeatherData weatherData;
+            WeatherStackData weatherData;
             WeatherDataDto weatherDataDto;
             try {
-                weatherData = objectMapper.readValue(response.getBody(), WeatherData.class);
-                weatherDataDto = weatherDataConverter.toJsonWeatherDataConvert(weatherData);
+                weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
+                weatherDataDto = weatherDataConverter.toJsonWeatherStackDataConvert(weatherData);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
