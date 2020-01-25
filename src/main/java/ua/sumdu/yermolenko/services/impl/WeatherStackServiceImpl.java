@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import ua.sumdu.yermolenko.model.WeatherStackData;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
@@ -12,6 +14,7 @@ import ua.sumdu.yermolenko.services.interfaces.WeatherStackService;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.concurrent.Future;
 
 @Service
 public class WeatherStackServiceImpl implements WeatherStackService {
@@ -22,7 +25,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
     @Autowired
     private WeatherDataConverter weatherDataConverter;
 
-    public String currentWeather(String city, String countryCode) {
+    @Override
+    @Async
+    public Future<String> currentWeather(String city, String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);
@@ -42,13 +47,15 @@ public class WeatherStackServiceImpl implements WeatherStackService {
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
                 weatherDataDto = weatherDataConverter.toJsonWeatherStackDataConvert(weatherData);
+                weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            return weatherDataDto.toString();
+
+            return new AsyncResult<>(weatherDataDto.toString());
         } else {
-            return "Request Failed" +"\n"
-                    + response.getStatusCode();
+            return new AsyncResult<>("Request Failed" +"\n"
+                    + response.getStatusCode());
         }
     }
 }

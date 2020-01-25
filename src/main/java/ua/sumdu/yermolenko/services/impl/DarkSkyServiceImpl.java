@@ -6,12 +6,16 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.interfaces.CityCoordinatesService;
 import ua.sumdu.yermolenko.services.interfaces.DarkSkyService;
+
+import java.util.concurrent.Future;
 
 @Service
 public class DarkSkyServiceImpl implements DarkSkyService {
@@ -25,7 +29,8 @@ public class DarkSkyServiceImpl implements DarkSkyService {
     CityCoordinatesService cityCoordinatesService;
 
     @Override
-    public String currentWeather(@NonNull String city, @NonNull String countryCode) {
+    @Async
+    public Future<String> currentWeather(@NonNull String city, @NonNull String countryCode) {
         long unixTime = System.currentTimeMillis() / 1000L;
 
         RestTemplate restTemplate = new RestTemplate();
@@ -36,9 +41,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
         try {
             cord = cityCoordinatesService.getCityCoordinates(city, countryCode);
         } catch (JSONException | IllegalArgumentException e) {
-            return "Request Failed: City not found";
+            return new AsyncResult<>("Request Failed: City not found");
         } catch (HttpServerErrorException e) {
-            return "City Coordinates Server Exception: " + e.toString();
+            return new AsyncResult<>("City Coordinates Server Exception: " + e.toString());
         }
 
         ResponseEntity<String> response = restTemplate.exchange(
@@ -61,10 +66,10 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
 
-            return weatherDataDto.toString();
+            return new AsyncResult<>(weatherDataDto.toString());
         } else {
-            return "Request Failed" +"\n"
-                    + response.getStatusCode();
+            return new AsyncResult<>("Request Failed" +"\n"
+                    + response.getStatusCode());
         }
     }
 }

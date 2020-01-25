@@ -3,10 +3,14 @@ package ua.sumdu.yermolenko.services.impl;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.interfaces.WeatherBitService;
+
+import java.util.concurrent.Future;
 
 @Service
 public class WeatherBitServiceImpl implements WeatherBitService {
@@ -17,7 +21,9 @@ public class WeatherBitServiceImpl implements WeatherBitService {
     @Value("${weatherbit.url}")
     private String url;
 
-    public String currentWeather(String city, String countryCode) {
+    @Override
+    @Async
+    public Future<String> currentWeather(String city, String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);
@@ -42,10 +48,10 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
 
-            return weatherDataDto.toString();
+            return new AsyncResult<>(weatherDataDto.toString());
         } else {
-            return "Request Failed" +"\n"
-                    + response.getStatusCode();
+            return new AsyncResult<>("Request Failed" +"\n"
+                    + response.getStatusCode());
         }
     }
 }

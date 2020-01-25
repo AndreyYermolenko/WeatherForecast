@@ -3,10 +3,11 @@ package ua.sumdu.yermolenko.services.impl;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
@@ -18,6 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.concurrent.Future;
 
 @Service
 public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
@@ -29,7 +31,8 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
     String url;
 
     @Override
-    public String currentWeather(@NonNull String city, @NonNull String countryCode) {
+    @Async
+    public Future<String> currentWeather(@NonNull String city, @NonNull String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);
@@ -68,10 +71,10 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setTemperature(temperature);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return weatherDataDto.toString();
+            return new AsyncResult<>(weatherDataDto.toString());
         } else {
-            return "Request Failed" +"\n"
-                    + response.getStatusCode();
+            return new AsyncResult<>("Request Failed" +"\n"
+                    + response.getStatusCode());
         }
     }
 }
