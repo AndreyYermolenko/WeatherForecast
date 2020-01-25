@@ -10,6 +10,8 @@ import ua.sumdu.yermolenko.services.interfaces.WeatherBitService;
 
 @Service
 public class WeatherBitServiceImpl implements WeatherBitService {
+    @Value("${servicename.weatherbit}")
+    private String serviceName;
     @Value("${weatherbit.api.key}")
     private String apiKey;
     @Value("${weatherbit.url}")
@@ -35,6 +37,7 @@ public class WeatherBitServiceImpl implements WeatherBitService {
                     .getJSONObject(0)
                     .getDouble("temp"));
 
+            weatherDataDto.setServiceName(serviceName);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);

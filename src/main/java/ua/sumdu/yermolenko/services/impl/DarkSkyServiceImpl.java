@@ -15,6 +15,8 @@ import ua.sumdu.yermolenko.services.interfaces.DarkSkyService;
 
 @Service
 public class DarkSkyServiceImpl implements DarkSkyService {
+    @Value("${servicename.darksky}")
+    private String serviceName;
     @Value("${darksky.api.key}")
     private String apiKey;
     @Value("${darksky.url}")
@@ -48,12 +50,13 @@ public class DarkSkyServiceImpl implements DarkSkyService {
         );
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            WeatherDataDto weatherDataDto = new WeatherDataDto();
             JSONObject jsonObject = new JSONObject(response.getBody());
             String temperature = String.valueOf(jsonObject
                     .getJSONObject("currently")
                     .getDouble("temperature"));
 
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            weatherDataDto.setServiceName(serviceName);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);

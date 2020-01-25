@@ -21,6 +21,8 @@ import java.io.StringReader;
 
 @Service
 public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
+    @Value("${servicename.openweathermap}")
+    private String serviceName;
     @Value("${openweathermap.api.key}")
     private String apiKey;
     @Value("${openweathermap.url}")
@@ -60,6 +62,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         }
 
         WeatherDataDto weatherDataDto = new WeatherDataDto();
+        weatherDataDto.setServiceName(serviceName);
         weatherDataDto.setName(city);
         weatherDataDto.setCountry(countryCode);
         weatherDataDto.setTemperature(temperature);
