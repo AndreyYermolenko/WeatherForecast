@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -30,6 +31,7 @@ public class DarkSkyServiceImpl implements DarkSkyService {
 
     @Override
     @Async
+    @Cacheable("darkSkyCurrent")
     public Future<String> currentWeather(@NonNull String city, @NonNull String countryCode) {
         long unixTime = System.currentTimeMillis() / 1000L;
 

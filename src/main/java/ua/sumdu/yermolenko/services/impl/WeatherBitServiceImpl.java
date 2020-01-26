@@ -2,6 +2,7 @@ package ua.sumdu.yermolenko.services.impl;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -23,6 +24,7 @@ public class WeatherBitServiceImpl implements WeatherBitService {
 
     @Override
     @Async
+    @Cacheable("weatherBitCurrent")
     public Future<String> currentWeather(String city, String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();

@@ -2,6 +2,7 @@ package ua.sumdu.yermolenko.services.impl;
 
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -32,6 +33,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
 
     @Override
     @Async
+    @Cacheable("openWeatherMapCurrent")
     public Future<String> currentWeather(@NonNull String city, @NonNull String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();

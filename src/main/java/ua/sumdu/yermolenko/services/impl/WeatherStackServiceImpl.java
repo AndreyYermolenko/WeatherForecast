@@ -3,6 +3,7 @@ package ua.sumdu.yermolenko.services.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -27,6 +28,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
 
     @Override
     @Async
+    @Cacheable("weatherStackCurrent")
     public Future<String> currentWeather(String city, String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
