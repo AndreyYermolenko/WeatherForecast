@@ -35,7 +35,7 @@ public class DarkSkyServiceImpl implements DarkSkyService {
 
     @Override
     @Cacheable("darkSkyCurrent")
-    public String darkSkyCurrentWeather(@NonNull String city, @NonNull String countryCode) {
+    public String darkSkyCurrentWeatherThread(@NonNull String city, @NonNull String countryCode) {
         CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
                 currentWeather(city, countryCode), ExecutorSingleton.getExecutor()
         ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
@@ -46,7 +46,7 @@ public class DarkSkyServiceImpl implements DarkSkyService {
         }
     }
 
-    private String currentWeather(@NonNull String city, @NonNull String countryCode) {
+    public String currentWeather(@NonNull String city, @NonNull String countryCode) {
         long unixTime = System.currentTimeMillis() / 1000L;
 
         RestTemplate restTemplate = new RestTemplate();

@@ -38,7 +38,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
 
     @Override
     @Cacheable("openWeatherMapCurrent")
-    public String openWeatherMapCurrentWeather(@NonNull String city, @NonNull String countryCode) {
+    public String openWeatherMapCurrentWeatherThread(@NonNull String city, @NonNull String countryCode) {
         CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
                 currentWeather(city, countryCode), ExecutorSingleton.getExecutor()
         ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
@@ -49,7 +49,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         }
     }
 
-    private String currentWeather(@NonNull String city, @NonNull String countryCode) {
+    public String currentWeather(@NonNull String city, @NonNull String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);

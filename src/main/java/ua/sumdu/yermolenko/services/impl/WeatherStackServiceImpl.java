@@ -32,7 +32,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
 
     @Override
     @Cacheable("weatherStackCurrent")
-    public String weatherStackCurrentWeather(@NonNull String city, @NonNull String countryCode) {
+    public String weatherStackCurrentWeatherThread(@NonNull String city, @NonNull String countryCode) {
         CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
                 currentWeather(city, countryCode), ExecutorSingleton.getExecutor()
         ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
@@ -43,7 +43,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
         }
     }
 
-    private String currentWeather(String city, String countryCode) {
+    public String currentWeather(@NonNull String city, @NonNull String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);
