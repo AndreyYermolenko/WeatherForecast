@@ -4,23 +4,26 @@ import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
+import ua.sumdu.yermolenko.services.ExecutorSingleton;
 import ua.sumdu.yermolenko.services.interfaces.OpenWeatherMapService;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
@@ -29,12 +32,24 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
     @Value("${openweathermap.api.key}")
     private String apiKey;
     @Value("${openweathermap.url}")
-    String url;
+    private String url;
+    @Value("${api.timeout}")
+    private int apiTimeout;
 
     @Override
-    @Async
     @Cacheable("openWeatherMapCurrent")
-    public Future<String> currentWeather(@NonNull String city, @NonNull String countryCode) {
+    public String openWeatherMapCurrentWeather(@NonNull String city, @NonNull String countryCode) {
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
+                currentWeather(city, countryCode), ExecutorSingleton.getExecutor()
+        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String currentWeather(@NonNull String city, @NonNull String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);
@@ -73,10 +88,10 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setTemperature(temperature);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new AsyncResult<>(weatherDataDto.toString());
+            return weatherDataDto.toString();
         } else {
-            return new AsyncResult<>("Request Failed" +"\n"
-                    + response.getStatusCode());
+            return "Request Failed" +"\n"
+                    + response.getStatusCode();
         }
     }
 }

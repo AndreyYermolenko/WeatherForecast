@@ -17,7 +17,7 @@ public class CityCoordinatesServiceImpl implements CityCoordinatesService {
     @Value("${opencagedata.api.key}")
     private String apiKey;
     @Value("${opencagedata.url}")
-    String url;
+    private String url;
 
     public double[] getCityCoordinates(String city, String countryCode) throws JSONException, IllegalArgumentException, HttpStatusCodeException {
         RestTemplate restTemplate = new RestTemplate();

@@ -7,16 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
+import ua.sumdu.yermolenko.services.ExecutorSingleton;
 import ua.sumdu.yermolenko.services.interfaces.CityCoordinatesService;
 import ua.sumdu.yermolenko.services.interfaces.DarkSkyService;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
 
 @Service
 public class DarkSkyServiceImpl implements DarkSkyService {
@@ -25,14 +27,26 @@ public class DarkSkyServiceImpl implements DarkSkyService {
     @Value("${darksky.api.key}")
     private String apiKey;
     @Value("${darksky.url}")
-    String url;
+    private String url;
+    @Value("${api.timeout}")
+    private int apiTimeout;
     @Autowired
-    CityCoordinatesService cityCoordinatesService;
+    private CityCoordinatesService cityCoordinatesService;
 
     @Override
-    @Async
     @Cacheable("darkSkyCurrent")
-    public Future<String> currentWeather(@NonNull String city, @NonNull String countryCode) {
+    public String darkSkyCurrentWeather(@NonNull String city, @NonNull String countryCode) {
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
+                currentWeather(city, countryCode), ExecutorSingleton.getExecutor()
+        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String currentWeather(@NonNull String city, @NonNull String countryCode) {
         long unixTime = System.currentTimeMillis() / 1000L;
 
         RestTemplate restTemplate = new RestTemplate();
@@ -43,9 +57,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
         try {
             cord = cityCoordinatesService.getCityCoordinates(city, countryCode);
         } catch (JSONException | IllegalArgumentException e) {
-            return new AsyncResult<>("Request Failed: City not found");
+            return "Request Failed: City not found";
         } catch (HttpServerErrorException e) {
-            return new AsyncResult<>("City Coordinates Server Exception: " + e.toString());
+            return "City Coordinates Server Exception: " + e.toString();
         }
 
         ResponseEntity<String> response = restTemplate.exchange(
@@ -68,10 +82,10 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
 
-            return new AsyncResult<>(weatherDataDto.toString());
+            return weatherDataDto.toString();
         } else {
-            return new AsyncResult<>("Request Failed" +"\n"
-                    + response.getStatusCode());
+            return "Request Failed" +"\n"
+                    + response.getStatusCode();
         }
     }
 }

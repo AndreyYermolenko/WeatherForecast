@@ -1,17 +1,19 @@
 package ua.sumdu.yermolenko.services.impl;
 
+import lombok.NonNull;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
+import ua.sumdu.yermolenko.services.ExecutorSingleton;
 import ua.sumdu.yermolenko.services.interfaces.WeatherBitService;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class WeatherBitServiceImpl implements WeatherBitService {
@@ -21,11 +23,23 @@ public class WeatherBitServiceImpl implements WeatherBitService {
     private String apiKey;
     @Value("${weatherbit.url}")
     private String url;
+    @Value("${api.timeout}")
+    private int apiTimeout;
 
     @Override
-    @Async
     @Cacheable("weatherBitCurrent")
-    public Future<String> currentWeather(String city, String countryCode) {
+    public String weatherBitCurrentWeather(@NonNull String city, @NonNull String countryCode) {
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
+                currentWeather(city, countryCode), ExecutorSingleton.getExecutor()
+        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String currentWeather(String city, String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);
@@ -50,10 +64,10 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
 
-            return new AsyncResult<>(weatherDataDto.toString());
+            return weatherDataDto.toString();
         } else {
-            return new AsyncResult<>("Request Failed" +"\n"
-                    + response.getStatusCode());
+            return "Request Failed" +"\n"
+                    + response.getStatusCode();
         }
     }
 }

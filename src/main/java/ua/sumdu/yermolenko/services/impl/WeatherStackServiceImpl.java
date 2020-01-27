@@ -1,21 +1,23 @@
 package ua.sumdu.yermolenko.services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
-import ua.sumdu.yermolenko.model.WeatherStackData;
+import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
+import ua.sumdu.yermolenko.model.WeatherStackData;
+import ua.sumdu.yermolenko.services.ExecutorSingleton;
 import ua.sumdu.yermolenko.services.WeatherDataConverter;
 import ua.sumdu.yermolenko.services.interfaces.WeatherStackService;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class WeatherStackServiceImpl implements WeatherStackService {
@@ -25,11 +27,23 @@ public class WeatherStackServiceImpl implements WeatherStackService {
     private String url;
     @Autowired
     private WeatherDataConverter weatherDataConverter;
+    @Value("${api.timeout}")
+    private int apiTimeout;
 
     @Override
-    @Async
     @Cacheable("weatherStackCurrent")
-    public Future<String> currentWeather(String city, String countryCode) {
+    public String weatherStackCurrentWeather(@NonNull String city, @NonNull String countryCode) {
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
+                currentWeather(city, countryCode), ExecutorSingleton.getExecutor()
+        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String currentWeather(String city, String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);
@@ -54,10 +68,10 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 throw new RuntimeException(e);
             }
 
-            return new AsyncResult<>(weatherDataDto.toString());
+            return weatherDataDto.toString();
         } else {
-            return new AsyncResult<>("Request Failed" +"\n"
-                    + response.getStatusCode());
+            return "Request Failed" +"\n"
+                    + response.getStatusCode();
         }
     }
 }
