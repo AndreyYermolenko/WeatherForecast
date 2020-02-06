@@ -1,5 +1,9 @@
 package ua.sumdu.yermolenko.config;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import ua.sumdu.yermolenko.services.impl.WeatherStackServiceImpl;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,6 +19,8 @@ import java.util.concurrent.Executors;
  * Created on 31.01.2020
  */
 public class ExecutorSingleton {
+    private final static Logger logger = LogManager.getLogger(WeatherStackServiceImpl.class);
+
     private static int countOfThread;
     static {
         File file = new File("src" + File.separator
@@ -25,7 +31,7 @@ public class ExecutorSingleton {
         try {
             properties.load(new FileReader(file));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error("ExecutorSingleton problem.", e);
         }
         countOfThread = Integer.parseInt(properties.getProperty("executor.countofthread"));
     }

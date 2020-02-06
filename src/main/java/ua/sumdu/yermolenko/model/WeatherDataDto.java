@@ -1,6 +1,9 @@
 package ua.sumdu.yermolenko.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Class WeatherDataDto stores weather data.
@@ -9,6 +12,9 @@ import lombok.Data;
  * Created on 31.01.2020
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@XmlType(propOrder = { "serviceName", "name", "country", "temperature", "latitude",
+        "longitude", "pressure", "windSpeed", "humidity", "exceptionMessage" })
 public class WeatherDataDto {
     private String serviceName;
     private String name;
@@ -18,49 +24,14 @@ public class WeatherDataDto {
     private String longitude;
     private String pressure;
     private String windSpeed;
+    private String humidity;
+    private String exceptionMessage;
 
-    /**
-     * Method toJsonTemperature returns temperature data in the Json format.
-     * @return String
-     */
-    public String toJsonTemperature() {
-        return "{\"" + serviceName + "\":" +
-                "{" +
-                "\"name\": " + "\"" + name + "\"," +
-                "\"country\":" + "\"" + country + "\"," +
-                "\"temperature\":" + "\"" + temperature + "\"" +
-                "}" +
-                "}";
+    public WeatherDataDto() {
     }
 
-    /**
-     * Method toJsonCoordinates returns city coordinates in the Json format.
-     * @return String
-     */
-    public String toJsonCoordinates() {
-        return "{\"" + serviceName + "\":" +
-                "{" +
-                "\"name\": " + "\"" + name + "\"," +
-                "\"country\":" + "\"" + country + "\"," +
-                "\"latitude\":" + "\"" + latitude + "\"," +
-                "\"longitude\":" + "\"" + longitude + "\"" +
-                "}" +
-                "}";
-    }
-
-    /**
-     * Method toJsonFullWeather returns full weather data in the Json format.
-     * @return String
-     */
-    public String toJsonFullWeather() {
-        return "{\"" + serviceName + "\":" +
-                "{" +
-                "\"name\": " + "\"" + name + "\"," +
-                "\"country\":" + "\"" + country + "\"," +
-                "\"temperature\":" + "\"" + temperature + "\"," +
-                "\"pressure\":" + "\"" + pressure + "\"," +
-                "\"wind_speed\":" + "\"" + windSpeed + "\"" +
-                "}" +
-                "}";
+    public WeatherDataDto(String serviceName, String exceptionMessage) {
+        this.serviceName = serviceName;
+        this.exceptionMessage = exceptionMessage;
     }
 }

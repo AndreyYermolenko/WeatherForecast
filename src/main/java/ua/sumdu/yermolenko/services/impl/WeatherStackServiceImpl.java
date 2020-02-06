@@ -12,14 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.model.WeatherStackData;
-import ua.sumdu.yermolenko.config.ExecutorSingleton;
-import ua.sumdu.yermolenko.tools.WeatherDataConverter;
 import ua.sumdu.yermolenko.services.WeatherStackService;
+import ua.sumdu.yermolenko.tools.WeatherDataConverter;
 
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+
+import static ua.sumdu.yermolenko.services.ServiceConstants.OPENWEATHERMAP_SERVICENAME;
+import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERSTACK_SERVICENAME;
 
 /**
  * Class WeatherStackServiceImpl implements interface WeatherStackService.
@@ -30,77 +29,19 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class WeatherStackServiceImpl implements WeatherStackService {
     private final static Logger logger = LogManager.getLogger(WeatherStackServiceImpl.class);
+
+    private final ResponseEntity<WeatherDataDto> RESPONSE_FAILED = new ResponseEntity<WeatherDataDto>(
+            new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
+                    "Response Failed. Server error."),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+    private final String PROBLEM_MESSAGE = "OpenWeatherMapService problem";
+
     @Value("${weatherstack.api.key}")
     private String apiKey;
     @Value("${weatherstack.url}")
     private String url;
     @Autowired
     private WeatherDataConverter weatherDataConverter;
-    @Value("${api.timeout}")
-    private int apiTimeout;
-
-    /**
-     * Method getTemperatureThread executes an API request in a separate thread
-     * to obtain temperature data.
-     *
-     * @param city of type String
-     * @param countryCode of type String
-     * @return String
-     */
-    @Override
-    public String getTemperatureThread(@NonNull String city, @NonNull String countryCode) {
-        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
-                getTemperature(city, countryCode), ExecutorSingleton.getExecutor()
-        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("WeatherStackService problem", e);
-            return "Request Failed. Server error.";
-        }
-    }
-
-    /**
-     * Method getCityCoordinatesThread executes an API request in a separate thread
-     * to obtain data on the coordinates of the city.
-     *
-     * @param city of type String
-     * @param countryCode of type String
-     * @return String
-     */
-    @Override
-    public String getCityCoordinatesThread(@NonNull String city, @NonNull String countryCode) {
-        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
-                getCityCoordinates(city, countryCode), ExecutorSingleton.getExecutor()
-        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("WeatherStackService problem", e);
-            return "Request Failed. Server error.";
-        }
-    }
-
-    /**
-     * Method getFullWeatherThread executes an API request in a separate thread
-     * to obtain current weather data.
-     *
-     * @param city of type String
-     * @param countryCode of type String
-     * @return String
-     */
-    @Override
-    public String getFullWeatherThread(@NonNull String city, @NonNull String countryCode) {
-        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
-                getFullWeather(city, countryCode), ExecutorSingleton.getExecutor()
-        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("WeatherStackService problem", e);
-            return "Request Failed. Server error.";
-        }
-    }
 
     /**
      * Method getTemperature executes an API request to obtain temperature data.
@@ -110,7 +51,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      * @return String
      */
     @Cacheable("weatherStackTemperature")
-    public String getTemperature(@NonNull String city, @NonNull String countryCode) {
+    public ResponseEntity<WeatherDataDto> getTemperature(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -118,16 +59,16 @@ public class WeatherStackServiceImpl implements WeatherStackService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonWeatherStackDataConvert(weatherData);
+                weatherDataDto = weatherDataConverter.toJsonTemperatureConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error("WeatherStackService problem", e);
-                return "Request Failed. Server error.";
+                logger.error(PROBLEM_MESSAGE, e);
+                return RESPONSE_FAILED;
             }
-            return weatherDataDto.toJsonTemperature();
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
         } else {
-            return "Request Failed" +"\n"
-                    + response.getStatusCode();
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
         }
     }
 
@@ -140,7 +81,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      * @return String
      */
     @Cacheable("weatherStackCityCoordinates")
-    public String getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
+    public ResponseEntity<WeatherDataDto> getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -148,16 +89,16 @@ public class WeatherStackServiceImpl implements WeatherStackService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonWeatherStackDataConvert(weatherData);
+                weatherDataDto = weatherDataConverter.toJsonCityCoordinatesConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error("WeatherStackService problem", e);
-                return "Request Failed. Server error.";
+                logger.error(PROBLEM_MESSAGE, e);
+                return RESPONSE_FAILED;
             }
-            return weatherDataDto.toJsonCoordinates();
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
         } else {
-            return "Request Failed" +"\n"
-                    + response.getStatusCode();
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
         }
     }
 
@@ -170,7 +111,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      */
     @Override
     @Cacheable("weatherStackFullWeather")
-    public String getFullWeather(@NonNull String city, @NonNull String countryCode) {
+    public ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -178,16 +119,85 @@ public class WeatherStackServiceImpl implements WeatherStackService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonWeatherStackDataConvert(weatherData);
+                weatherDataDto = weatherDataConverter.toJsonFullWeatherConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error("WeatherStackService problem", e);
-                return "Request Failed. Server error.";
+                logger.error(PROBLEM_MESSAGE, e);
+                return RESPONSE_FAILED;
             }
-            return weatherDataDto.toJsonFullWeather();
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
         } else {
-            return "Request Failed" +"\n"
-                    + response.getStatusCode();
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    @Override
+    @Cacheable("weatherStackPressure")
+    public ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            WeatherStackData weatherData;
+            WeatherDataDto weatherDataDto;
+            try {
+                weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
+                weatherDataDto = weatherDataConverter.toJsonPressureConvert(weatherData);
+                weatherDataDto.setCountry(countryCode);
+            } catch (IOException e) {
+                logger.error(PROBLEM_MESSAGE, e);
+                return RESPONSE_FAILED;
+            }
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    @Override
+    @Cacheable("weatherStackWindSpeed")
+    public ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            WeatherStackData weatherData;
+            WeatherDataDto weatherDataDto;
+            try {
+                weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
+                weatherDataDto = weatherDataConverter.toJsonWindSpeedConvert(weatherData);
+                weatherDataDto.setCountry(countryCode);
+            } catch (IOException e) {
+                logger.error(PROBLEM_MESSAGE, e);
+                return RESPONSE_FAILED;
+            }
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    @Override
+    @Cacheable("weatherStackHumidity")
+    public ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            WeatherStackData weatherData;
+            WeatherDataDto weatherDataDto;
+            try {
+                weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
+                weatherDataDto = weatherDataConverter.toJsonHumidityConvert(weatherData);
+                weatherDataDto.setCountry(countryCode);
+            } catch (IOException e) {
+                logger.error(PROBLEM_MESSAGE, e);
+                return RESPONSE_FAILED;
+            }
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
         }
     }
 

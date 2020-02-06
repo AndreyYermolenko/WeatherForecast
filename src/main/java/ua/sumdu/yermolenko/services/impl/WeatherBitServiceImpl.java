@@ -10,12 +10,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
-import ua.sumdu.yermolenko.config.ExecutorSingleton;
 import ua.sumdu.yermolenko.services.WeatherBitService;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERBIT_SERVICENAME;
 
 /**
  * Class WeatherBitServiceImpl implements interface WeatherBitService.
@@ -26,77 +23,11 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class WeatherBitServiceImpl implements WeatherBitService {
     private final static Logger logger = LogManager.getLogger(WeatherBitServiceImpl.class);
-    @Value("${servicename.weatherbit}")
-    private String serviceName;
+
     @Value("${weatherbit.api.key}")
     private String apiKey;
     @Value("${weatherbit.url}")
     private String url;
-    @Value("${api.timeout}")
-    private int apiTimeout;
-
-   /**
-    * Method getTemperatureThread executes an API request in a separate thread
-    * to obtain temperature data.
-    *
-    * @param city of type String
-    * @param countryCode of type String
-    * @return String
-    */
-   @Override
-    public String getTemperatureThread(@NonNull String city, @NonNull String countryCode) {
-        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
-                getTemperature(city, countryCode), ExecutorSingleton.getExecutor()
-        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("WeatherBitService problem", e);
-            return "Request Failed. Server error.";
-        }
-    }
-
-    /**
-     * Method getCityCoordinatesThread executes an API request in a separate thread
-     * to obtain data on the coordinates of the city.
-     *
-     * @param city of type String
-     * @param countryCode of type String
-     * @return String
-     */
-    @Override
-    public String getCityCoordinatesThread(@NonNull String city, @NonNull String countryCode) {
-        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
-                getCityCoordinates(city, countryCode), ExecutorSingleton.getExecutor()
-        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("WeatherBitService problem", e);
-            return "Request Failed. Server error.";
-        }
-    }
-
-    /**
-     * Method getFullWeatherThread executes an API request in a separate thread
-     * to obtain current weather data.
-     *
-     * @param city of type String
-     * @param countryCode of type String
-     * @return String
-     */
-    @Override
-    public String getFullWeatherThread(@NonNull String city, @NonNull String countryCode) {
-        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
-                getFullWeather(city, countryCode), ExecutorSingleton.getExecutor()
-        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("WeatherBitService problem", e);
-            return "Request Failed. Server error.";
-        }
-    }
 
     /**
      * Method getTemperature executes an API request to obtain temperature data.
@@ -106,7 +37,7 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      * @return String
      */
     @Cacheable("weatherBitTemperature")
-    public String getTemperature(@NonNull String city, @NonNull String countryCode) {
+    public ResponseEntity<WeatherDataDto> getTemperature(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -115,15 +46,14 @@ public class WeatherBitServiceImpl implements WeatherBitService {
                     .getJSONObject(0)
                     .getDouble("temp"));
 
-            weatherDataDto.setServiceName(serviceName);
+            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
 
-            return weatherDataDto.toJsonTemperature();
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
         } else {
-            return "Request Failed" +"\n"
-                    + response.getStatusCode();
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
         }
     }
 
@@ -136,7 +66,7 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      * @return String
      */
     @Cacheable("weatherBitCityCoordinates")
-    public String getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
+    public ResponseEntity<WeatherDataDto> getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -148,16 +78,15 @@ public class WeatherBitServiceImpl implements WeatherBitService {
                     .getJSONObject(0)
                     .getDouble("lon"));
 
-            weatherDataDto.setServiceName(serviceName);
+            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setLatitude(latitude);
             weatherDataDto.setLongitude(longitude);
 
-            return weatherDataDto.toJsonCoordinates();
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
         } else {
-            return "Request Failed" +"\n"
-                    + response.getStatusCode();
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
         }
     }
 
@@ -170,7 +99,7 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      */
     @Override
     @Cacheable("weatherBitFullWeather")
-    public String getFullWeather(@NonNull String city, @NonNull String countryCode) {
+    public ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -184,18 +113,82 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             String windSpeed = String.valueOf(jsonObject.getJSONArray("data")
                     .getJSONObject(0)
                     .getDouble("wind_spd"));
+            String humidity = "Api does not support this field.";
 
-            weatherDataDto.setServiceName(serviceName);
+            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
             weatherDataDto.setPressure(pressure);
             weatherDataDto.setWindSpeed(windSpeed);
+            weatherDataDto.setHumidity(humidity);
 
-            return weatherDataDto.toJsonFullWeather();
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
         } else {
-            return "Request Failed" +"\n"
-                    + response.getStatusCode();
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+        }
+    }
+
+    @Override
+    @Cacheable("weatherBitCityPressure")
+    public ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            String pressure = String.valueOf(jsonObject.getJSONArray("data")
+                    .getJSONObject(0)
+                    .getDouble("pres"));
+
+            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setPressure(pressure);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+        }
+    }
+
+    @Override
+    @Cacheable("weatherBitWindSpeed")
+    public ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            String windSpeed = String.valueOf(jsonObject.getJSONArray("data")
+                    .getJSONObject(0)
+                    .getDouble("wind_spd"));
+
+            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setWindSpeed(windSpeed);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+        }
+    }
+
+    @Override
+    @Cacheable("weatherBitCityHumidity")
+    public ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            String humidity = "Api does not support this field.";
+
+            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setHumidity(humidity);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
         }
     }
 

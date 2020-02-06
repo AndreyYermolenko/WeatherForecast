@@ -1,6 +1,8 @@
 package ua.sumdu.yermolenko.services;
 
 import lombok.NonNull;
+import org.springframework.http.ResponseEntity;
+import ua.sumdu.yermolenko.model.WeatherDataDto;
 
 /**
  * Interface OpenWeatherMapService is implemented by the class, which realizes
@@ -18,7 +20,7 @@ public interface OpenWeatherMapService {
      * @param countryCode of type String
      * @return String
      */
-    String getTemperatureThread(@NonNull String city, @NonNull String countryCode);
+    ResponseEntity<WeatherDataDto> getTemperature(@NonNull String city, @NonNull String countryCode);
     /**
      * Method getCityCoordinatesThread executes an api request in a separate thread
      * to obtain data on the coordinates of the city.
@@ -27,16 +29,7 @@ public interface OpenWeatherMapService {
      * @param countryCode of type String
      * @return String
      */
-    String getCityCoordinatesThread(@NonNull String city, @NonNull String countryCode);
-    /**
-     * Method getFullWeatherThread executes an API request in a separate thread
-     * to obtain current weather data.
-     *
-     * @param city of type String
-     * @param countryCode of type String
-     * @return String
-     */
-    String getFullWeatherThread(@NonNull String city, @NonNull String countryCode);
+    ResponseEntity<WeatherDataDto> getCityCoordinates(@NonNull String city, @NonNull String countryCode);
     /**
      * Method getFullWeather executes an API request to obtain current weather data.
      *
@@ -44,5 +37,12 @@ public interface OpenWeatherMapService {
      * @param countryCode of type String
      * @return String
      */
-    String getFullWeather(@NonNull String city, @NonNull String countryCode);
+    ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode);
+
+    ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode);
+
+    ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode);
+
+    ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode);
+
 }

@@ -1,9 +1,10 @@
 package ua.sumdu.yermolenko.tools;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ua.sumdu.yermolenko.model.WeatherStackData;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
+import ua.sumdu.yermolenko.model.WeatherStackData;
+
+import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERSTACK_SERVICENAME;
 
 /**
  * Class WeatherDataConverter is used for parsing weather API data.
@@ -13,27 +14,81 @@ import ua.sumdu.yermolenko.model.WeatherDataDto;
  */
 @Component
 public class WeatherDataConverter {
-    @Value("${servicename.weatherstack}")
-    private String serviceName;
+
+    public WeatherDataDto toJsonTemperatureConvert(WeatherStackData inputData) {
+        WeatherDataDto outputData = new WeatherDataDto();
+
+        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setName(inputData.getLocation().getName());
+        outputData.setCountry(inputData.getLocation().getCountry());
+        outputData.setTemperature(inputData.getCurrent().getTemperature());
+
+        return outputData;
+    }
+
+    public WeatherDataDto toJsonCityCoordinatesConvert(WeatherStackData inputData) {
+        WeatherDataDto outputData = new WeatherDataDto();
+
+        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setName(inputData.getLocation().getName());
+        outputData.setCountry(inputData.getLocation().getCountry());
+        outputData.setLatitude(inputData.getLocation().getLat());
+        outputData.setLongitude(inputData.getLocation().getLon());
+
+        return outputData;
+    }
+
+    public WeatherDataDto toJsonPressureConvert(WeatherStackData inputData) {
+            WeatherDataDto outputData = new WeatherDataDto();
+
+            outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+            outputData.setName(inputData.getLocation().getName());
+            outputData.setCountry(inputData.getLocation().getCountry());
+            outputData.setPressure(inputData.getCurrent().getPressure());
+
+            return outputData;
+    }
+
+    public WeatherDataDto toJsonWindSpeedConvert(WeatherStackData inputData) {
+        WeatherDataDto outputData = new WeatherDataDto();
+        double windSpeedMetersPerSecond = Double.parseDouble(inputData.getCurrent().getWindSpeed()) / 3.6;
+
+        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setName(inputData.getLocation().getName());
+        outputData.setCountry(inputData.getLocation().getCountry());
+        outputData.setWindSpeed(String.valueOf(windSpeedMetersPerSecond));
+
+        return outputData;
+    }
+
+    public WeatherDataDto toJsonHumidityConvert(WeatherStackData inputData) {
+        WeatherDataDto outputData = new WeatherDataDto();
+
+        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setName(inputData.getLocation().getName());
+        outputData.setCountry(inputData.getLocation().getCountry());
+        outputData.setHumidity(inputData.getCurrent().getHumidity());
+
+        return outputData;
+    }
 
     /**
-     * Method toJsonWeatherStackDataConvert converts WeatherStack API data.
+     * Method toJsonFullWeatherConvert converts full weather from WeatherStack API.
      *
      * @param inputData of type WeatherStackData
      * @return WeatherDataDto
      */
-    public WeatherDataDto toJsonWeatherStackDataConvert(WeatherStackData inputData) {
+    public WeatherDataDto toJsonFullWeatherConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
-        double windSpeedMetersPerSecond = Double.parseDouble(inputData.getCurrent().getWindSpeed())/3.6;
+        double windSpeedMetersPerSecond = Double.parseDouble(inputData.getCurrent().getWindSpeed()) / 3.6;
 
-        outputData.setServiceName(serviceName);
+        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
         outputData.setName(inputData.getLocation().getName());
         outputData.setCountry(inputData.getLocation().getCountry());
         outputData.setTemperature(inputData.getCurrent().getTemperature());
         outputData.setPressure(inputData.getCurrent().getPressure());
         outputData.setWindSpeed(String.valueOf(windSpeedMetersPerSecond));
-        outputData.setLatitude(inputData.getLocation().getLat());
-        outputData.setLongitude(inputData.getLocation().getLon());
+        outputData.setHumidity(inputData.getCurrent().getHumidity());
 
         return outputData;
     }

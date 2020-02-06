@@ -13,13 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
-import ua.sumdu.yermolenko.config.ExecutorSingleton;
 import ua.sumdu.yermolenko.services.CityCoordinatesService;
 import ua.sumdu.yermolenko.services.DarkSkyService;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import static ua.sumdu.yermolenko.services.ServiceConstants.DARKSKY_SERVICENAME;
 
 /**
  * Class DarkSkyServiceImpl implements interface DarkSkyService.
@@ -30,79 +27,12 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class DarkSkyServiceImpl implements DarkSkyService {
     private final static Logger logger = LogManager.getLogger(DarkSkyServiceImpl.class);
-    @Value("${servicename.darksky}")
-    private String serviceName;
     @Value("${darksky.api.key}")
     private String apiKey;
     @Value("${darksky.url}")
     private String url;
-    @Value("${api.timeout}")
-    private int apiTimeout;
     @Autowired
     private CityCoordinatesService cityCoordinatesService;
-
-    /**
-     * Method getTemperatureThread executes an API request in a separate thread
-     * to obtain temperature data.
-     *
-     * @param city of type String
-     * @param countryCode of type String
-     * @return String
-     */
-    @Override
-    public String getTemperatureThread(@NonNull String city, @NonNull String countryCode) {
-        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
-                getTemperature(city, countryCode), ExecutorSingleton.getExecutor()
-        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("DarkSkyService problem", e);
-            return "Request Failed. Server error.";
-        }
-    }
-
-    /**
-     * Method getCityCoordinatesThread executes an API request in a separate thread
-     * to obtain data on the coordinates of the city.
-     *
-     * @param city of type String
-     * @param countryCode of type String
-     * @return String
-     */
-    @Override
-    public String getCityCoordinatesThread(@NonNull String city, @NonNull String countryCode) {
-        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
-                getCityCoordinates(city, countryCode), ExecutorSingleton.getExecutor()
-        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("DarkSkyService problem", e);
-            return "Request Failed. Server error.";
-        }
-    }
-
-    /**
-     * Method getFullWeatherThread executes an API request in a separate thread
-     * to obtain current weather data.
-     *
-     * @param city of type String
-     * @param countryCode of type String
-     * @return String
-     */
-    @Override
-    public String getFullWeatherThread(@NonNull String city, @NonNull String countryCode) {
-        CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
-                getFullWeather(city, countryCode), ExecutorSingleton.getExecutor()
-        ).completeOnTimeout("Превышено время ожидания ответа от сервера.", apiTimeout, TimeUnit.SECONDS);
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("DarkSkyService problem", e);
-            return "Request Failed. Server error.";
-        }
-    }
 
     /**
      * Method getTemperature executes an API request to obtain temperature data.
@@ -112,7 +42,7 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      * @return String
      */
     @Cacheable("darkSkyTemperature")
-    public String getTemperature(@NonNull String city, @NonNull String countryCode) {
+    public ResponseEntity<WeatherDataDto> getTemperature(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             JSONObject jsonObject = new JSONObject(response.getBody());
@@ -121,16 +51,14 @@ public class DarkSkyServiceImpl implements DarkSkyService {
                     .getDouble("temperature"));
 
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(serviceName);
+            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
 
-            return weatherDataDto.toJsonTemperature();
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
         } else {
-            return "Request Failed: "
-                    + response.getBody() + " "
-                    + response.getStatusCode();
+            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
         }
     }
 
@@ -143,7 +71,7 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      * @return String
      */
     @Cacheable("darkSkyCityCoordinates")
-    public String getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
+    public ResponseEntity<WeatherDataDto> getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             JSONObject jsonObject = new JSONObject(response.getBody());
@@ -153,17 +81,15 @@ public class DarkSkyServiceImpl implements DarkSkyService {
                     .getDouble("longitude"));
 
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(serviceName);
+            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setLatitude(latitude);
             weatherDataDto.setLongitude(longitude);
 
-            return weatherDataDto.toJsonCoordinates();
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
         } else {
-            return "Request Failed: "
-                    + response.getBody() + " "
-                    + response.getStatusCode();
+            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
         }
     }
 
@@ -176,7 +102,7 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      */
     @Override
     @Cacheable("darkSkyFullWeather")
-    public String getFullWeather(@NonNull String city, @NonNull String countryCode) {
+    public ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             JSONObject jsonObject = new JSONObject(response.getBody());
@@ -189,20 +115,88 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             String windSpeed = String.valueOf(jsonObject
                     .getJSONObject("currently")
                     .getDouble("windSpeed"));
+            String humidity = String.valueOf(jsonObject
+                    .getJSONObject("currently")
+                    .getDouble("humidity")*100);
 
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(serviceName);
+            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
             weatherDataDto.setPressure(pressure);
             weatherDataDto.setWindSpeed(windSpeed);
+            weatherDataDto.setHumidity(humidity);
 
-            return weatherDataDto.toJsonFullWeather();
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
         } else {
-            return "Request Failed: "
-                    + response.getBody() + " "
-                    + response.getStatusCode();
+            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    @Override
+    @Cacheable("darkSkyPressure")
+    public ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            String pressure = String.valueOf(jsonObject
+                    .getJSONObject("currently")
+                    .getDouble("pressure"));
+
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setPressure(pressure);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    @Override
+    @Cacheable("darkSkyWindSpeed")
+    public ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            String windSpeed = String.valueOf(jsonObject
+                    .getJSONObject("currently")
+                    .getDouble("windSpeed"));
+
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setWindSpeed(windSpeed);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    @Override
+    @Cacheable("darkSkyHumidity")
+    public ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            String humidity = String.valueOf(jsonObject
+                    .getJSONObject("currently")
+                    .getDouble("humidity")*100);
+
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setHumidity(humidity);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
         }
     }
 

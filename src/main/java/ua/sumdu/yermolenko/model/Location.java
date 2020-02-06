@@ -3,6 +3,12 @@ package ua.sumdu.yermolenko.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+/**
+ * Class Location is used for parsing WeatherStack API data using Jackson.
+ *
+ * @author AndreyYermolenko
+ * Created on 07.02.2020
+ */
 @Data
 public class Location {
     private String name;
