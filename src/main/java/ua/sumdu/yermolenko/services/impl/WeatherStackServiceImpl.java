@@ -73,6 +73,13 @@ public class WeatherStackServiceImpl implements WeatherStackService {
     }
 
     /**
+     * Method getCityCoordinates executes an API request to obtain city coordinates.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return String
+     */
+    /**
      * Method getCityCoordinates executes an API request to obtain data
      * on the coordinates of the city.
      *
@@ -103,35 +110,12 @@ public class WeatherStackServiceImpl implements WeatherStackService {
     }
 
     /**
-     * Method getFullWeather executes an API request to obtain current weather data.
+     * Method getPressure executes an API request to obtain pressure data.
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return ResponseEntity<WeatherDataDto>
      */
-    @Override
-    @Cacheable("weatherStackFullWeather")
-    public ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode) {
-        ResponseEntity<String> response = getWeather(city, countryCode);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            WeatherStackData weatherData;
-            WeatherDataDto weatherDataDto;
-            try {
-                weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonFullWeatherConvert(weatherData);
-                weatherDataDto.setCountry(countryCode);
-            } catch (IOException e) {
-                logger.error(PROBLEM_MESSAGE, e);
-                return RESPONSE_FAILED;
-            }
-
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
-        } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
-        }
-    }
-
     @Override
     @Cacheable("weatherStackPressure")
     public ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode) {
@@ -155,6 +139,13 @@ public class WeatherStackServiceImpl implements WeatherStackService {
         }
     }
 
+    /**
+     * Method getWindSpeed executes an API request to obtain wind speed data.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
     @Override
     @Cacheable("weatherStackWindSpeed")
     public ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode) {
@@ -178,6 +169,13 @@ public class WeatherStackServiceImpl implements WeatherStackService {
         }
     }
 
+    /**
+     * Method getHumidity executes an API request to obtain humidity data.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
     @Override
     @Cacheable("weatherStackHumidity")
     public ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode) {
@@ -189,6 +187,36 @@ public class WeatherStackServiceImpl implements WeatherStackService {
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
                 weatherDataDto = weatherDataConverter.toJsonHumidityConvert(weatherData);
+                weatherDataDto.setCountry(countryCode);
+            } catch (IOException e) {
+                logger.error(PROBLEM_MESSAGE, e);
+                return RESPONSE_FAILED;
+            }
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getFullWeather executes an API request to obtain current weather data.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return String
+     */
+    @Override
+    @Cacheable("weatherStackFullWeather")
+    public ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            WeatherStackData weatherData;
+            WeatherDataDto weatherDataDto;
+            try {
+                weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
+                weatherDataDto = weatherDataConverter.toJsonFullWeatherConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
                 logger.error(PROBLEM_MESSAGE, e);

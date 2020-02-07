@@ -159,6 +159,14 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         }
     }
 
+    /**
+     * Method WeatherAggregationData returns pressure data from different APIs.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @param ext of type String
+     * @return String
+     */
     @Override
     @Cacheable("pressureAggregation")
     public ResponseEntity<WeatherDataDto> pressureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
@@ -202,6 +210,14 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         }
     }
 
+    /**
+     * Method WeatherAggregationData returns wind speed data from different APIs.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @param ext of type String
+     * @return String
+     */
     @Override
     @Cacheable("windSpeedAggregation")
     public ResponseEntity<WeatherDataDto> windSpeedAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
@@ -245,6 +261,14 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         }
     }
 
+    /**
+     * Method WeatherAggregationData returns humidity data from different APIs.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @param ext of type String
+     * @return String
+     */
     @Override
     @Cacheable("humidityAggregation")
     public ResponseEntity<WeatherDataDto> humidityAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {

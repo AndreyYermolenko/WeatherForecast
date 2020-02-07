@@ -15,6 +15,12 @@ import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERSTACK_SERVICE
 @Component
 public class WeatherDataConverter {
 
+    /**
+     * Method toJsonTemperatureConvert Method toJsonHumidityConvert converts temperature data from WeatherStack API.
+     *
+     * @param inputData of type WeatherStackData
+     * @return WeatherDataDto
+     */
     public WeatherDataDto toJsonTemperatureConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
 
@@ -26,6 +32,12 @@ public class WeatherDataConverter {
         return outputData;
     }
 
+    /**
+     * Method toJsonCityCoordinatesConvert Method toJsonHumidityConvert converts city coordinates data from WeatherStack API.
+     *
+     * @param inputData of type WeatherStackData
+     * @return WeatherDataDto
+     */
     public WeatherDataDto toJsonCityCoordinatesConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
 
@@ -38,6 +50,12 @@ public class WeatherDataConverter {
         return outputData;
     }
 
+    /**
+     * Method toJsonPressureConvert Method toJsonHumidityConvert converts pressure data from WeatherStack API.
+     *
+     * @param inputData of type WeatherStackData
+     * @return WeatherDataDto
+     */
     public WeatherDataDto toJsonPressureConvert(WeatherStackData inputData) {
             WeatherDataDto outputData = new WeatherDataDto();
 
@@ -49,6 +67,12 @@ public class WeatherDataConverter {
             return outputData;
     }
 
+    /**
+     * Method toJsonWindSpeedConvert Method toJsonHumidityConvert converts wind speed data from WeatherStack API.
+     *
+     * @param inputData of type WeatherStackData
+     * @return WeatherDataDto
+     */
     public WeatherDataDto toJsonWindSpeedConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
         double windSpeedMetersPerSecond = Double.parseDouble(inputData.getCurrent().getWindSpeed()) / 3.6;
@@ -61,6 +85,12 @@ public class WeatherDataConverter {
         return outputData;
     }
 
+    /**
+     * Method toJsonHumidityConvert converts humidity data from WeatherStack API.
+     *
+     * @param inputData of type WeatherStackData
+     * @return WeatherDataDto
+     */
     public WeatherDataDto toJsonHumidityConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
 

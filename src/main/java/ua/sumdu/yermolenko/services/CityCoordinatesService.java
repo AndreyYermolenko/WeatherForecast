@@ -17,7 +17,7 @@ public interface CityCoordinatesService {
      * @param city of type String
      * @param countryCode of type String
      * @return double[]
-     * @throws HttpStatusCodeException when
+     * @throws HttpStatusCodeException when request failed.
      */
     double[] getCityCoordinates(@NonNull String city, @NonNull String countryCode) throws HttpStatusCodeException;
 }

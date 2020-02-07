@@ -12,14 +12,13 @@ import ua.sumdu.yermolenko.model.WeatherDataDto;
  * Created on 01.02.2020
  */
 public interface WeatherAggregationDataService {
-
     /**
      * Method WeatherAggregationData returns temperature data from different APIs.
      *
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return String
+     * @return ResponseEntity<WeatherDataDto>
      */
     ResponseEntity<WeatherDataDto> temperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
@@ -29,14 +28,38 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return String
+     * @return ResponseEntity<WeatherDataDto>
      */
     ResponseEntity<WeatherDataDto> cityCoordinatesAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
+    /**
+     * Method WeatherAggregationData returns pressure data from different APIs.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @param ext of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
     ResponseEntity<WeatherDataDto> pressureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
+    /**
+     * Method WeatherAggregationData returns wind speed data from different APIs.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @param ext of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
     ResponseEntity<WeatherDataDto> windSpeedAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
+    /**
+     * Method WeatherAggregationData returns humidity data from different APIs.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @param ext of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
     ResponseEntity<WeatherDataDto> humidityAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
     /**
@@ -45,7 +68,7 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return String
+     * @return ResponseEntity<WeatherDataDto>
      */
     ResponseEntity<WeatherDataDto> fullWeatherAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 }

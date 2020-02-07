@@ -90,8 +90,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
     }
 
     /**
-     * Method getCityCoordinates executes an API request to obtain data
-     * on the coordinates of the city.
+     * Method getCityCoordinates executes an API request to obtain city coordinates.
      *
      * @param city of type String
      * @param countryCode of type String
@@ -129,6 +128,141 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setCountry(countryCode);
         weatherDataDto.setLatitude(latitude);
         weatherDataDto.setLongitude(longitude);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getPressure executes an API request to obtain pressure data.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Override
+    @Cacheable("openWeatherMapPressure")
+    public ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document doc;
+        try {
+            builder = factory.newDocumentBuilder();
+            doc = builder.parse(new InputSource(new StringReader(response.getBody())));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        XPathFactory xpathfactory = XPathFactory.newInstance();
+        XPath xpath = xpathfactory.newXPath();
+        String pressure;
+        try {
+            pressure = xpath.evaluate("/current/pressure/@value", doc);
+        } catch (XPathExpressionException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        WeatherDataDto weatherDataDto = new WeatherDataDto();
+        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setName(city);
+        weatherDataDto.setCountry(countryCode);
+        weatherDataDto.setPressure(pressure);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getWindSpeed executes an API request to obtain wind speed data.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Override
+    @Cacheable("openWeatherMapWindSpeed")
+    public ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document doc;
+        try {
+            builder = factory.newDocumentBuilder();
+            doc = builder.parse(new InputSource(new StringReader(response.getBody())));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        XPathFactory xpathfactory = XPathFactory.newInstance();
+        XPath xpath = xpathfactory.newXPath();
+        String windSpeed;
+        try {
+            windSpeed = xpath.evaluate("/current/wind/speed/@value", doc);
+        } catch (XPathExpressionException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        WeatherDataDto weatherDataDto = new WeatherDataDto();
+        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setName(city);
+        weatherDataDto.setCountry(countryCode);
+        weatherDataDto.setWindSpeed(windSpeed);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getHumidity executes an API request to obtain humidity data.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Override
+    @Cacheable("openWeatherMapCityHumidity")
+    public ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document doc;
+        try {
+            builder = factory.newDocumentBuilder();
+            doc = builder.parse(new InputSource(new StringReader(response.getBody())));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        XPathFactory xpathfactory = XPathFactory.newInstance();
+        XPath xpath = xpathfactory.newXPath();
+        String humidity;
+        try {
+            humidity = xpath.evaluate("/current/humidity/@value", doc);
+        } catch (XPathExpressionException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        WeatherDataDto weatherDataDto = new WeatherDataDto();
+        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setName(city);
+        weatherDataDto.setCountry(countryCode);
+        weatherDataDto.setHumidity(humidity);
 
         if (response.getStatusCode() == HttpStatus.OK) {
             return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
@@ -182,120 +316,6 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setTemperature(temperature);
         weatherDataDto.setPressure(pressure);
         weatherDataDto.setWindSpeed(windSpeed);
-        weatherDataDto.setHumidity(humidity);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
-        } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
-        }
-    }
-
-    @Override
-    @Cacheable("openWeatherMapPressure")
-    public ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode) {
-        ResponseEntity<String> response = getWeather(city, countryCode);
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        Document doc;
-        try {
-            builder = factory.newDocumentBuilder();
-            doc = builder.parse(new InputSource(new StringReader(response.getBody())));
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
-            return RESPONSE_FAILED;
-        }
-
-        XPathFactory xpathfactory = XPathFactory.newInstance();
-        XPath xpath = xpathfactory.newXPath();
-        String pressure;
-        try {
-            pressure = xpath.evaluate("/current/pressure/@value", doc);
-        } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
-            return RESPONSE_FAILED;
-        }
-
-        WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
-        weatherDataDto.setName(city);
-        weatherDataDto.setCountry(countryCode);
-        weatherDataDto.setPressure(pressure);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
-        } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
-        }
-    }
-
-    @Override
-    @Cacheable("openWeatherMapWindSpeed")
-    public ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode) {
-        ResponseEntity<String> response = getWeather(city, countryCode);
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        Document doc;
-        try {
-            builder = factory.newDocumentBuilder();
-            doc = builder.parse(new InputSource(new StringReader(response.getBody())));
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
-            return RESPONSE_FAILED;
-        }
-
-        XPathFactory xpathfactory = XPathFactory.newInstance();
-        XPath xpath = xpathfactory.newXPath();
-        String windSpeed;
-        try {
-            windSpeed = xpath.evaluate("/current/wind/speed/@value", doc);
-        } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
-            return RESPONSE_FAILED;
-        }
-
-        WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
-        weatherDataDto.setName(city);
-        weatherDataDto.setCountry(countryCode);
-        weatherDataDto.setWindSpeed(windSpeed);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
-        } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
-        }
-    }
-
-    @Override
-    @Cacheable("openWeatherMapCityHumidity")
-    public ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode) {
-        ResponseEntity<String> response = getWeather(city, countryCode);
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        Document doc;
-        try {
-            builder = factory.newDocumentBuilder();
-            doc = builder.parse(new InputSource(new StringReader(response.getBody())));
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
-            return RESPONSE_FAILED;
-        }
-
-        XPathFactory xpathfactory = XPathFactory.newInstance();
-        XPath xpath = xpathfactory.newXPath();
-        String humidity;
-        try {
-            humidity = xpath.evaluate("/current/humidity/@value", doc);
-        } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
-            return RESPONSE_FAILED;
-        }
-
-        WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
-        weatherDataDto.setName(city);
-        weatherDataDto.setCountry(countryCode);
         weatherDataDto.setHumidity(humidity);
 
         if (response.getStatusCode() == HttpStatus.OK) {
