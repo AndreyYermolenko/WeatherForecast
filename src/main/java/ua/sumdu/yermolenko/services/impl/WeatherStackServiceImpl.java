@@ -229,6 +229,124 @@ public class WeatherStackServiceImpl implements WeatherStackService {
         }
     }
 
+    /**
+     * Method getSunRiseTime executes an API request to obtain city sunrise time.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Override
+    @Cacheable("weatherStackSunriseTime")
+    public ResponseEntity<WeatherDataDto> getSunriseTime(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            WeatherStackData weatherData;
+            WeatherDataDto weatherDataDto;
+            try {
+                weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
+                weatherDataDto = weatherDataConverter.toJsonSunriseTimeConvert(weatherData);
+                weatherDataDto.setCountry(countryCode);
+            } catch (IOException e) {
+                logger.error(PROBLEM_MESSAGE, e);
+                return RESPONSE_FAILED;
+            }
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getFeelsLikeTemperature executes an API request to obtain temperature how does it feel.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("weatherStackFeelsLikeTemperature")
+    public ResponseEntity<WeatherDataDto> getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            WeatherStackData weatherData;
+            WeatherDataDto weatherDataDto;
+            try {
+                weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
+                weatherDataDto = weatherDataConverter.toJsonTemperatureFeelsLikeConvert(weatherData);
+                weatherDataDto.setCountry(countryCode);
+            } catch (IOException e) {
+                logger.error(PROBLEM_MESSAGE, e);
+                return RESPONSE_FAILED;
+            }
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getDirectionWind executes an API request to obtain direction wind data.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("weatherStackDirectionWind")
+    public ResponseEntity<WeatherDataDto> getDirectionWind(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            WeatherStackData weatherData;
+            WeatherDataDto weatherDataDto;
+            try {
+                weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
+                weatherDataDto = weatherDataConverter.toJsonDirectionWindConvert(weatherData);
+                weatherDataDto.setCountry(countryCode);
+            } catch (IOException e) {
+                logger.error(PROBLEM_MESSAGE, e);
+                return RESPONSE_FAILED;
+            }
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getWeatherDescription executes an API request to obtain weather description.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("weatherStackWeatherDescription")
+    public ResponseEntity<WeatherDataDto> getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            WeatherStackData weatherData;
+            WeatherDataDto weatherDataDto;
+            try {
+                weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
+                weatherDataDto = weatherDataConverter.toJsonWeatherDescriptionConvert(weatherData);
+                weatherDataDto.setCountry(countryCode);
+            } catch (IOException e) {
+                logger.error(PROBLEM_MESSAGE, e);
+                return RESPONSE_FAILED;
+            }
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+
     private ResponseEntity<String> getWeather(@NonNull String city, @NonNull String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();

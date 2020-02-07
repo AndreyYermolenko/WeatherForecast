@@ -65,4 +65,40 @@ public interface WeatherStackService {
      * @return ResponseEntity<WeatherDataDto>
      */
     ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode);
+
+    /**
+     * Method getSunRiseTime executes an API request to obtain city sunrise time.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    ResponseEntity<WeatherDataDto> getSunriseTime(@NonNull String city, @NonNull String countryCode);
+
+    /**
+     * Method getDirectionWind executes an API request to obtain direction wind data.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    ResponseEntity<WeatherDataDto> getDirectionWind(@NonNull String city, @NonNull String countryCode);
+
+    /**
+     * Method getFeelsLikeTemperature executes an API request to obtain temperature how does it feel.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    ResponseEntity<WeatherDataDto> getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode);
+
+    /**
+     * Method getWeatherDescription executes an API request to obtain weather description.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    ResponseEntity<WeatherDataDto> getWeatherDescription(@NonNull String city, @NonNull String countryCode);
 }

@@ -325,6 +325,164 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         }
     }
 
+    /**
+     * Method getSunRiseTime executes an API request to obtain city sunrise time.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Override
+    @Cacheable("openWeatherMapSunriseTime")
+    public ResponseEntity<WeatherDataDto> getSunriseTime(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document doc;
+        try {
+            builder = factory.newDocumentBuilder();
+            doc = builder.parse(new InputSource(new StringReader(response.getBody())));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        XPathFactory xpathfactory = XPathFactory.newInstance();
+        XPath xpath = xpathfactory.newXPath();
+        String sunrise;
+        try {
+            sunrise = xpath.evaluate("/current/city/sun/@rise", doc);
+        } catch (XPathExpressionException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        WeatherDataDto weatherDataDto = new WeatherDataDto();
+        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setName(city);
+        weatherDataDto.setCountry(countryCode);
+        weatherDataDto.setSunrise(sunrise);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getFeelsLikeTemperature executes an API request to obtain temperature how does it feel.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("openWeatherMapFeelsLikeTemperature")
+    public ResponseEntity<WeatherDataDto> getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document doc;
+        try {
+            builder = factory.newDocumentBuilder();
+            doc = builder.parse(new InputSource(new StringReader(response.getBody())));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        XPathFactory xpathfactory = XPathFactory.newInstance();
+        XPath xpath = xpathfactory.newXPath();
+        String temperatureFeelsLike;
+        try {
+            temperatureFeelsLike = xpath.evaluate("/current/feels_like/@value", doc);
+        } catch (XPathExpressionException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        WeatherDataDto weatherDataDto = new WeatherDataDto();
+        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setName(city);
+        weatherDataDto.setCountry(countryCode);
+        weatherDataDto.setTemperatureFeelsLike(temperatureFeelsLike);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getDirectionWind executes an API request to obtain direction wind data.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("openWeatherMapDirectionWind")
+    public ResponseEntity<WeatherDataDto> getDirectionWind(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document doc;
+        try {
+            builder = factory.newDocumentBuilder();
+            doc = builder.parse(new InputSource(new StringReader(response.getBody())));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        XPathFactory xpathfactory = XPathFactory.newInstance();
+        XPath xpath = xpathfactory.newXPath();
+        String windDir;
+        try {
+            windDir = xpath.evaluate("/current/wind/direction/@name", doc);
+        } catch (XPathExpressionException e) {
+            logger.error(PROBLEM_MESSAGE, e);
+            return RESPONSE_FAILED;
+        }
+
+        WeatherDataDto weatherDataDto = new WeatherDataDto();
+        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setName(city);
+        weatherDataDto.setCountry(countryCode);
+        weatherDataDto.setDirectionWind(windDir);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getWeatherDescription executes an API request to obtain weather description.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("openWeatherMapWeatherDescription")
+    public ResponseEntity<WeatherDataDto> getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        String weatherDescription = "Api does not support this field.";
+
+        WeatherDataDto weatherDataDto = new WeatherDataDto();
+        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setName(city);
+        weatherDataDto.setCountry(countryCode);
+        weatherDataDto.setWeatherDescription(weatherDescription);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
     private ResponseEntity<String> getWeather(@NonNull String city, @NonNull String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();

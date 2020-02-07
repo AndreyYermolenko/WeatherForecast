@@ -220,6 +220,106 @@ public class DarkSkyServiceImpl implements DarkSkyService {
         }
     }
 
+    /**
+     * Method getSunRiseTime executes an API request to obtain city sunrise time.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Override
+    @Cacheable("darkSkySunriseTime")
+    public ResponseEntity<WeatherDataDto> getSunriseTime(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            String sunrise = "Api does not support this field.";
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setSunrise(sunrise);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getFeelsLikeTemperature executes an API request to obtain temperature how does it feel.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("darkSkyFeelsLikeTemperature")
+    public ResponseEntity<WeatherDataDto> getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            String temperatureFeelsLike = String.valueOf(jsonObject
+                    .getJSONObject("currently")
+                    .getDouble("apparentTemperature"));
+
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setTemperatureFeelsLike(temperatureFeelsLike);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getDirectionWind executes an API request to obtain direction wind data.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("darkSkyDirectionWind")
+    public ResponseEntity<WeatherDataDto> getDirectionWind(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            String windDir = "Api does not support this field.";
+
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setDirectionWind(windDir);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getWeatherDescription executes an API request to obtain weather description.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("darkSkyWeatherDescription")
+    public ResponseEntity<WeatherDataDto> getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            String weatherDesc = "Api does not support this field.";
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setWeatherDescription(weatherDesc);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+        }
+    }
+
     private ResponseEntity<String> getWeather(@NonNull String city, @NonNull String countryCode) {
         long unixTime = System.currentTimeMillis() / 1000L;
 

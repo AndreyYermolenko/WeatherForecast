@@ -14,7 +14,8 @@ import javax.xml.bind.annotation.XmlType;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @XmlType(propOrder = { "serviceName", "name", "country", "temperature", "latitude",
-        "longitude", "pressure", "windSpeed", "humidity", "exceptionMessage" })
+        "longitude", "pressure", "windSpeed", "humidity", "sunrise", "temperatureFeelsLike",
+        "directionWind", "weatherDescription", "exceptionMessage" })
 public class WeatherDataDto {
     private String serviceName;
     private String name;
@@ -25,6 +26,10 @@ public class WeatherDataDto {
     private String pressure;
     private String windSpeed;
     private String humidity;
+    private String sunrise;
+    private String temperatureFeelsLike;
+    private String directionWind;
+    private String weatherDescription;
     private String exceptionMessage;
 
     public WeatherDataDto() {

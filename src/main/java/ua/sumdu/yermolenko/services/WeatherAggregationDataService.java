@@ -71,4 +71,44 @@ public interface WeatherAggregationDataService {
      * @return ResponseEntity<WeatherDataDto>
      */
     ResponseEntity<WeatherDataDto> fullWeatherAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+
+    /**
+     * Method WeatherAggregationData returns city sunrise time from different APIs.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @param ext of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    ResponseEntity<WeatherDataDto> sunriseTimeAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+
+    /**
+     * Method WeatherAggregationData returns direction wind from different APIs.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @param ext of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    ResponseEntity<WeatherDataDto> directionWindAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+
+    /**
+     * Method WeatherAggregationData returns temperature how does it feel from different APIs.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @param ext of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    ResponseEntity<WeatherDataDto> feelsLikeTemperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+
+    /**
+     * Method WeatherAggregationData returns weather description from different APIs.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @param ext of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    ResponseEntity<WeatherDataDto> weatherDescriptionAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 }

@@ -212,6 +212,120 @@ public class WeatherBitServiceImpl implements WeatherBitService {
         }
     }
 
+    /**
+     * Method getSunRiseTime executes an API request to obtain city sunrise time.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Override
+    @Cacheable("weatherBitSunriseTime")
+    public ResponseEntity<WeatherDataDto> getSunriseTime(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            String sunrise = String.valueOf(jsonObject.getJSONArray("data")
+                    .getJSONObject(0)
+                    .getString("sunrise"));
+
+            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setSunrise(sunrise);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getFeelsLikeTemperature executes an API request to obtain temperature how does it feel.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("weatherBitFeelsLikeTemperature")
+    public ResponseEntity<WeatherDataDto> getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            String temperatureFeelsLike = String.valueOf(jsonObject.getJSONArray("data")
+                    .getJSONObject(0)
+                    .getDouble("app_temp"));
+
+            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setSunrise(temperatureFeelsLike);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getDirectionWind executes an API request to obtain direction wind data.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("weatherBitDirectionWind")
+    public ResponseEntity<WeatherDataDto> getDirectionWind(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            String windDir = String.valueOf(jsonObject.getJSONArray("data")
+                    .getJSONObject(0)
+                    .getString("wind_cdir_full"));
+
+            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setDirectionWind(windDir);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+        }
+    }
+
+    /**
+     * Method getWeatherDescription executes an API request to obtain weather description.
+     *
+     * @param city of type String
+     * @param countryCode of type String
+     * @return ResponseEntity<WeatherDataDto>
+     */
+    @Cacheable("weatherBitWeatherDescription")
+    public ResponseEntity<WeatherDataDto> getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
+        ResponseEntity<String> response = getWeather(city, countryCode);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            WeatherDataDto weatherDataDto = new WeatherDataDto();
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            String weatherDescription = String.valueOf(jsonObject.getJSONArray("data")
+                    .getJSONObject(0)
+                    .getJSONObject("weather")
+                    .getString("description"));
+
+            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setName(city);
+            weatherDataDto.setCountry(countryCode);
+            weatherDataDto.setWeatherDescription(weatherDescription);
+
+            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+        } else {
+            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+        }
+    }
+
     private ResponseEntity<String> getWeather(@NonNull String city, @NonNull String countryCode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();

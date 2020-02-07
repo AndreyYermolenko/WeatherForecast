@@ -122,4 +122,72 @@ public class WeatherDataConverter {
 
         return outputData;
     }
+
+    /**
+     * Method toJsonSunriseTimeConvert converts sunrise time from WeatherStack API.
+     *
+     * @param inputData of type WeatherStackData
+     * @return WeatherDataDto
+     */
+    public WeatherDataDto toJsonSunriseTimeConvert(WeatherStackData inputData) {
+        WeatherDataDto outputData = new WeatherDataDto();
+
+        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setName(inputData.getLocation().getName());
+        outputData.setCountry(inputData.getLocation().getCountry());
+        outputData.setSunrise(inputData.getCurrent().getObservationTime());
+
+        return outputData;
+    }
+
+    /**
+     * Method toJsonTemperatureFeelsLikeConvert converts temperature how does it feel from WeatherStack API.
+     *
+     * @param inputData of type WeatherStackData
+     * @return WeatherDataDto
+     */
+    public WeatherDataDto toJsonTemperatureFeelsLikeConvert(WeatherStackData inputData) {
+        WeatherDataDto outputData = new WeatherDataDto();
+
+        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setName(inputData.getLocation().getName());
+        outputData.setCountry(inputData.getLocation().getCountry());
+        outputData.setTemperatureFeelsLike(inputData.getCurrent().getFeelslike());
+
+        return outputData;
+    }
+
+    /**
+     * Method toJsonDirectionWindConvert converts direction wind from WeatherStack API.
+     *
+     * @param inputData of type WeatherStackData
+     * @return WeatherDataDto
+     */
+    public WeatherDataDto toJsonDirectionWindConvert(WeatherStackData inputData) {
+        WeatherDataDto outputData = new WeatherDataDto();
+
+        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setName(inputData.getLocation().getName());
+        outputData.setCountry(inputData.getLocation().getCountry());
+        outputData.setDirectionWind(inputData.getCurrent().getWindDir());
+
+        return outputData;
+    }
+
+    /**
+     * Method toJsonWeatherDescriptionConvert converts direction wind from WeatherStack API.
+     *
+     * @param inputData of type WeatherStackData
+     * @return WeatherDataDto
+     */
+    public WeatherDataDto toJsonWeatherDescriptionConvert(WeatherStackData inputData) {
+        WeatherDataDto outputData = new WeatherDataDto();
+
+        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setName(inputData.getLocation().getName());
+        outputData.setCountry(inputData.getLocation().getCountry());
+        outputData.setWeatherDescription(inputData.getCurrent().getWeatherDescriptions()[0]);
+
+        return outputData;
+    }
 }
