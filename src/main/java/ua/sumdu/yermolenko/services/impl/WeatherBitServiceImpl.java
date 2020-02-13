@@ -1,8 +1,6 @@
 package ua.sumdu.yermolenko.services.impl;
 
 import lombok.NonNull;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,7 +20,6 @@ import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERBIT_SERVICENA
  */
 @Service
 public class WeatherBitServiceImpl implements WeatherBitService {
-    private final static Logger logger = LogManager.getLogger(WeatherBitServiceImpl.class);
 
     @Value("${weatherbit.api.key}")
     private String apiKey;
@@ -34,10 +31,10 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Cacheable("weatherBitTemperature")
-    public ResponseEntity<WeatherDataDto> getTemperature(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getTemperature(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -51,9 +48,9 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
         }
     }
 
@@ -62,10 +59,10 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Cacheable("weatherBitCityCoordinates")
-    public ResponseEntity<WeatherDataDto> getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -83,9 +80,9 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setLatitude(latitude);
             weatherDataDto.setLongitude(longitude);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
         }
     }
 
@@ -94,11 +91,11 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("weatherBitCityPressure")
-    public ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getPressure(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -112,9 +109,9 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setPressure(pressure);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
         }
     }
 
@@ -123,11 +120,11 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("weatherBitWindSpeed")
-    public ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getWindSpeed(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -141,9 +138,9 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setWindSpeed(windSpeed);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
         }
     }
 
@@ -152,11 +149,11 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("weatherBitCityHumidity")
-    public ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getHumidity(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -167,9 +164,9 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setHumidity(humidity);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
         }
     }
 
@@ -178,11 +175,11 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("weatherBitFullWeather")
-    public ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getFullWeather(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -206,9 +203,9 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setWindSpeed(windSpeed);
             weatherDataDto.setHumidity(humidity);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
         }
     }
 
@@ -217,11 +214,11 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("weatherBitSunriseTime")
-    public ResponseEntity<WeatherDataDto> getSunriseTime(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getSunriseTime(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -235,9 +232,9 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setSunrise(sunrise);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
         }
     }
 
@@ -246,10 +243,10 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Cacheable("weatherBitFeelsLikeTemperature")
-    public ResponseEntity<WeatherDataDto> getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -263,9 +260,9 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setSunrise(temperatureFeelsLike);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
         }
     }
 
@@ -274,10 +271,10 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Cacheable("weatherBitDirectionWind")
-    public ResponseEntity<WeatherDataDto> getDirectionWind(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getDirectionWind(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -291,9 +288,9 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setDirectionWind(windDir);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
         }
     }
 
@@ -302,10 +299,10 @@ public class WeatherBitServiceImpl implements WeatherBitService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Cacheable("weatherBitWeatherDescription")
-    public ResponseEntity<WeatherDataDto> getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
@@ -320,9 +317,9 @@ public class WeatherBitServiceImpl implements WeatherBitService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setWeatherDescription(weatherDescription);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody()),response.getStatusCode());
+            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
         }
     }
 

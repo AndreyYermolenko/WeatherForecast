@@ -6,10 +6,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ua.sumdu.yermolenko.config.ExecutorSingleton;
-import ua.sumdu.yermolenko.model.WeatherDataArr;
+import ua.sumdu.yermolenko.model.WeatherDataFormat;
+import ua.sumdu.yermolenko.model.WeatherDataJson;
+import ua.sumdu.yermolenko.model.WeatherDataXml;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.*;
 
@@ -30,23 +31,10 @@ import static ua.sumdu.yermolenko.services.ServiceConstants.*;
 public class WeatherAggregationDataServiceImpl implements WeatherAggregationDataService {
     private final static Logger logger = LogManager.getLogger(WeatherAggregationDataServiceImpl.class);
 
-    private final ResponseEntity<WeatherDataDto> RESPONSE_FAILED = new ResponseEntity<WeatherDataDto>(
-            new WeatherDataDto(null,
-                    "Response Failed. Server error."),
-            HttpStatus.INTERNAL_SERVER_ERROR);
-
-    private final ResponseEntity<WeatherDataDto> DARKSKY_TIMEOUT = new ResponseEntity<>(
-            new WeatherDataDto(DARKSKY_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE),
-            HttpStatus.REQUEST_TIMEOUT);
-    private final ResponseEntity<WeatherDataDto> OPENWEATHERMAP_TIMEOUT = new ResponseEntity<>(
-            new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE),
-            HttpStatus.REQUEST_TIMEOUT);
-    private final ResponseEntity<WeatherDataDto> WEATHERBIT_TIMEOUT = new ResponseEntity<>(
-            new WeatherDataDto(WEATHERBIT_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE),
-            HttpStatus.REQUEST_TIMEOUT);
-    private final ResponseEntity<WeatherDataDto> WEATHERSTACK_TIMEOUT = new ResponseEntity<>(
-            new WeatherDataDto(WEATHERSTACK_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE),
-            HttpStatus.REQUEST_TIMEOUT);
+    private final WeatherDataDto DARKSKY_TIMEOUT = new WeatherDataDto(DARKSKY_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
+    private final WeatherDataDto OPENWEATHERMAP_TIMEOUT = new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
+    private final WeatherDataDto WEATHERBIT_TIMEOUT = new WeatherDataDto(WEATHERBIT_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
+    private final WeatherDataDto WEATHERSTACK_TIMEOUT = new WeatherDataDto(WEATHERSTACK_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
 
     @Autowired
     private DarkSkyService darkSkyService;
@@ -56,6 +44,8 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
     private WeatherBitService weatherBitService;
     @Autowired
     private WeatherStackService weatherStackService;
+    @Autowired
+    private ExecutorSingleton executorSingleton;
 
     /**
      * Method WeatherAggregationData returns temperature data from different APIs.
@@ -63,48 +53,46 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return String
+     * @return WeatherDataFormat
      */
     @Override
     @Cacheable("temperatureAggregation")
-    public ResponseEntity<WeatherDataDto> temperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
-        CompletableFuture<ResponseEntity<WeatherDataDto>> darkSkyFuture = CompletableFuture.supplyAsync(() ->
-                darkSkyService.getTemperature(city, countryCode), ExecutorSingleton.getExecutor())
+    public WeatherDataFormat temperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+        CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
+                darkSkyService.getTemperature(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
-                openWeatherMapService.getTemperature(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
+                openWeatherMapService.getTemperature(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherBitFuture = CompletableFuture.supplyAsync(() ->
-                weatherBitService.getTemperature(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherBitFuture = CompletableFuture.supplyAsync(() ->
+                weatherBitService.getTemperature(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERBIT_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherStackFuture = CompletableFuture.supplyAsync(() ->
-                weatherStackService.getTemperature(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherStackFuture = CompletableFuture.supplyAsync(() ->
+                weatherStackService.getTemperature(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERSTACK_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
 
         ArrayList<WeatherDataDto> list = new ArrayList<>();
         try {
-            list.add(darkSkyFuture.get().getBody());
-            list.add(openWeatherMapFuture.get().getBody());
-            list.add(weatherBitFuture.get().getBody());
-            list.add(weatherStackFuture.get().getBody());
+            list.add(darkSkyFuture.get());
+            list.add(openWeatherMapFuture.get());
+            list.add(weatherBitFuture.get());
+            list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("TemperatureAggregation problem", e);
-            return RESPONSE_FAILED;
+            throw new WeatherForecastException("TemperatureAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-            return new ResponseEntity(list, HttpStatus.OK);
+            return new WeatherDataJson(list);
         } else {
-            WeatherDataArr arrXml = new WeatherDataArr(listToArr(list));
-            return new ResponseEntity(arrXml, HttpStatus.OK);
+            return new WeatherDataXml(list);
         }
     }
 
@@ -114,48 +102,46 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return String
+     * @return WeatherDataFormat
      */
     @Override
     @Cacheable("cityCoordinatesAggregation")
-    public ResponseEntity<WeatherDataDto> cityCoordinatesAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
-        CompletableFuture<ResponseEntity<WeatherDataDto>> darkSkyFuture = CompletableFuture.supplyAsync(() ->
-                darkSkyService.getCityCoordinates(city, countryCode), ExecutorSingleton.getExecutor())
+    public WeatherDataFormat cityCoordinatesAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+        CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
+                darkSkyService.getCityCoordinates(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
-                openWeatherMapService.getCityCoordinates(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
+                openWeatherMapService.getCityCoordinates(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherBitFuture = CompletableFuture.supplyAsync(() ->
-                weatherBitService.getCityCoordinates(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherBitFuture = CompletableFuture.supplyAsync(() ->
+                weatherBitService.getCityCoordinates(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERBIT_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherStackFuture = CompletableFuture.supplyAsync(() ->
-                weatherStackService.getCityCoordinates(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherStackFuture = CompletableFuture.supplyAsync(() ->
+                weatherStackService.getCityCoordinates(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERSTACK_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
 
         ArrayList<WeatherDataDto> list = new ArrayList<>();
         try {
-            list.add(darkSkyFuture.get().getBody());
-            list.add(openWeatherMapFuture.get().getBody());
-            list.add(weatherBitFuture.get().getBody());
-            list.add(weatherStackFuture.get().getBody());
+            list.add(darkSkyFuture.get());
+            list.add(openWeatherMapFuture.get());
+            list.add(weatherBitFuture.get());
+            list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("CityCoordinatesAggregation problem", e);
-            return RESPONSE_FAILED;
+            throw new WeatherForecastException("CityCoordinatesAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-            return new ResponseEntity(list, HttpStatus.OK);
+            return new WeatherDataJson(list);
         } else {
-            WeatherDataArr arrXml = new WeatherDataArr(listToArr(list));
-            return new ResponseEntity(arrXml, HttpStatus.OK);
+            return new WeatherDataXml(list);
         }
     }
 
@@ -165,48 +151,46 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return String
+     * @return WeatherDataFormat
      */
     @Override
     @Cacheable("pressureAggregation")
-    public ResponseEntity<WeatherDataDto> pressureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
-        CompletableFuture<ResponseEntity<WeatherDataDto>> darkSkyFuture = CompletableFuture.supplyAsync(() ->
-                darkSkyService.getPressure(city, countryCode), ExecutorSingleton.getExecutor())
+    public WeatherDataFormat pressureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+        CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
+                darkSkyService.getPressure(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
-                openWeatherMapService.getPressure(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
+                openWeatherMapService.getPressure(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherBitFuture = CompletableFuture.supplyAsync(() ->
-                weatherBitService.getPressure(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherBitFuture = CompletableFuture.supplyAsync(() ->
+                weatherBitService.getPressure(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERBIT_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherStackFuture = CompletableFuture.supplyAsync(() ->
-                weatherStackService.getPressure(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherStackFuture = CompletableFuture.supplyAsync(() ->
+                weatherStackService.getPressure(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERSTACK_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
 
         ArrayList<WeatherDataDto> list = new ArrayList<>();
         try {
-            list.add(darkSkyFuture.get().getBody());
-            list.add(openWeatherMapFuture.get().getBody());
-            list.add(weatherBitFuture.get().getBody());
-            list.add(weatherStackFuture.get().getBody());
+            list.add(darkSkyFuture.get());
+            list.add(openWeatherMapFuture.get());
+            list.add(weatherBitFuture.get());
+            list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("PressureAggregation problem", e);
-            return RESPONSE_FAILED;
+            throw new WeatherForecastException("PressureAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-            return new ResponseEntity(list, HttpStatus.OK);
+            return new WeatherDataJson(list);
         } else {
-            WeatherDataArr arrXml = new WeatherDataArr(listToArr(list));
-            return new ResponseEntity(arrXml, HttpStatus.OK);
+            return new WeatherDataXml(list);
         }
     }
 
@@ -216,48 +200,46 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return String
+     * @return WeatherDataFormat
      */
     @Override
     @Cacheable("windSpeedAggregation")
-    public ResponseEntity<WeatherDataDto> windSpeedAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
-        CompletableFuture<ResponseEntity<WeatherDataDto>> darkSkyFuture = CompletableFuture.supplyAsync(() ->
-                darkSkyService.getWindSpeed(city, countryCode), ExecutorSingleton.getExecutor())
+    public WeatherDataFormat windSpeedAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+        CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
+                darkSkyService.getWindSpeed(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
-                openWeatherMapService.getWindSpeed(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
+                openWeatherMapService.getWindSpeed(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherBitFuture = CompletableFuture.supplyAsync(() ->
-                weatherBitService.getWindSpeed(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherBitFuture = CompletableFuture.supplyAsync(() ->
+                weatherBitService.getWindSpeed(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERBIT_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherStackFuture = CompletableFuture.supplyAsync(() ->
-                weatherStackService.getWindSpeed(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherStackFuture = CompletableFuture.supplyAsync(() ->
+                weatherStackService.getWindSpeed(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERSTACK_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
 
         ArrayList<WeatherDataDto> list = new ArrayList<>();
         try {
-            list.add(darkSkyFuture.get().getBody());
-            list.add(openWeatherMapFuture.get().getBody());
-            list.add(weatherBitFuture.get().getBody());
-            list.add(weatherStackFuture.get().getBody());
+            list.add(darkSkyFuture.get());
+            list.add(openWeatherMapFuture.get());
+            list.add(weatherBitFuture.get());
+            list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("WindSpeedAggregation problem", e);
-            return RESPONSE_FAILED;
+            throw new WeatherForecastException("WindSpeedAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-            return new ResponseEntity(list, HttpStatus.OK);
+            return new WeatherDataJson(list);
         } else {
-            WeatherDataArr arrXml = new WeatherDataArr(listToArr(list));
-            return new ResponseEntity(arrXml, HttpStatus.OK);
+            return new WeatherDataXml(list);
         }
     }
 
@@ -267,48 +249,46 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return String
+     * @return WeatherDataFormat
      */
     @Override
     @Cacheable("humidityAggregation")
-    public ResponseEntity<WeatherDataDto> humidityAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
-        CompletableFuture<ResponseEntity<WeatherDataDto>> darkSkyFuture = CompletableFuture.supplyAsync(() ->
-                darkSkyService.getHumidity(city, countryCode), ExecutorSingleton.getExecutor())
+    public WeatherDataFormat humidityAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+        CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
+                darkSkyService.getHumidity(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
-                openWeatherMapService.getHumidity(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
+                openWeatherMapService.getHumidity(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherBitFuture = CompletableFuture.supplyAsync(() ->
-                weatherBitService.getHumidity(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherBitFuture = CompletableFuture.supplyAsync(() ->
+                weatherBitService.getHumidity(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERBIT_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherStackFuture = CompletableFuture.supplyAsync(() ->
-                weatherStackService.getHumidity(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherStackFuture = CompletableFuture.supplyAsync(() ->
+                weatherStackService.getHumidity(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERSTACK_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
 
         ArrayList<WeatherDataDto> list = new ArrayList<>();
         try {
-            list.add(darkSkyFuture.get().getBody());
-            list.add(openWeatherMapFuture.get().getBody());
-            list.add(weatherBitFuture.get().getBody());
-            list.add(weatherStackFuture.get().getBody());
+            list.add(darkSkyFuture.get());
+            list.add(openWeatherMapFuture.get());
+            list.add(weatherBitFuture.get());
+            list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("HumidityAggregation problem", e);
-            return RESPONSE_FAILED;
+            throw new WeatherForecastException("HumidityAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-            return new ResponseEntity(list, HttpStatus.OK);
+            return new WeatherDataJson(list);
         } else {
-            WeatherDataArr arrXml = new WeatherDataArr(listToArr(list));
-            return new ResponseEntity(arrXml, HttpStatus.OK);
+            return new WeatherDataXml(list);
         }
     }
 
@@ -318,48 +298,46 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return String
+     * @return WeatherDataFormat
      */
     @Override
     @Cacheable("fullWeatherAggregation")
-    public ResponseEntity<WeatherDataDto> fullWeatherAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
-        CompletableFuture<ResponseEntity<WeatherDataDto>> darkSkyFuture = CompletableFuture.supplyAsync(() ->
-                darkSkyService.getFullWeather(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(DARKSKY_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
-                openWeatherMapService.getFullWeather(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherBitFuture = CompletableFuture.supplyAsync(() ->
-                weatherBitService.getFullWeather(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(WEATHERBIT_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherStackFuture = CompletableFuture.supplyAsync(() ->
-                weatherStackService.getFullWeather(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(WEATHERSTACK_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
+    public WeatherDataFormat fullWeatherAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+        CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
+        darkSkyService.getFullWeather(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(DARKSKY_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
+        openWeatherMapService.getFullWeather(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> weatherBitFuture = CompletableFuture.supplyAsync(() ->
+        weatherBitService.getFullWeather(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(WEATHERBIT_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> weatherStackFuture = CompletableFuture.supplyAsync(() ->
+        weatherStackService.getFullWeather(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(WEATHERSTACK_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
 
         ArrayList<WeatherDataDto> list = new ArrayList<>();
         try {
-            list.add(darkSkyFuture.get().getBody());
-            list.add(openWeatherMapFuture.get().getBody());
-            list.add(weatherBitFuture.get().getBody());
-            list.add(weatherStackFuture.get().getBody());
+        list.add(darkSkyFuture.get());
+        list.add(openWeatherMapFuture.get());
+        list.add(weatherBitFuture.get());
+        list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("FullWeatherAggregation problem", e);
-            return RESPONSE_FAILED;
+        throw new WeatherForecastException("FullWeatherAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-            return new ResponseEntity(list, HttpStatus.OK);
+        return new WeatherDataJson(list);
         } else {
-            WeatherDataArr arrXml = new WeatherDataArr(listToArr(list));
-            return new ResponseEntity(arrXml, HttpStatus.OK);
+        return new WeatherDataXml(list);
         }
     }
 
@@ -369,48 +347,46 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
     @Override
     @Cacheable("sunriseTimeAggregation")
-    public ResponseEntity<WeatherDataDto> sunriseTimeAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
-        CompletableFuture<ResponseEntity<WeatherDataDto>> darkSkyFuture = CompletableFuture.supplyAsync(() ->
-                darkSkyService.getSunriseTime(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(DARKSKY_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
-                openWeatherMapService.getSunriseTime(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherBitFuture = CompletableFuture.supplyAsync(() ->
-                weatherBitService.getSunriseTime(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(WEATHERBIT_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherStackFuture = CompletableFuture.supplyAsync(() ->
-                weatherStackService.getSunriseTime(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(WEATHERSTACK_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
+    public WeatherDataFormat sunriseTimeAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+        CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
+        darkSkyService.getSunriseTime(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(DARKSKY_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
+        openWeatherMapService.getSunriseTime(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> weatherBitFuture = CompletableFuture.supplyAsync(() ->
+        weatherBitService.getSunriseTime(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(WEATHERBIT_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> weatherStackFuture = CompletableFuture.supplyAsync(() ->
+        weatherStackService.getSunriseTime(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(WEATHERSTACK_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
 
         ArrayList<WeatherDataDto> list = new ArrayList<>();
         try {
-            list.add(darkSkyFuture.get().getBody());
-            list.add(openWeatherMapFuture.get().getBody());
-            list.add(weatherBitFuture.get().getBody());
-            list.add(weatherStackFuture.get().getBody());
+        list.add(darkSkyFuture.get());
+        list.add(openWeatherMapFuture.get());
+        list.add(weatherBitFuture.get());
+        list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("FullWeatherAggregation problem", e);
-            return RESPONSE_FAILED;
+        throw new WeatherForecastException("SunriseTimeAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-            return new ResponseEntity(list, HttpStatus.OK);
+        return new WeatherDataJson(list);
         } else {
-            WeatherDataArr arrXml = new WeatherDataArr(listToArr(list));
-            return new ResponseEntity(arrXml, HttpStatus.OK);
+        return new WeatherDataXml(list);
         }
     }
 
@@ -420,48 +396,46 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
     @Override
     @Cacheable("directionWindAggregation")
-    public ResponseEntity<WeatherDataDto> directionWindAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
-        CompletableFuture<ResponseEntity<WeatherDataDto>> darkSkyFuture = CompletableFuture.supplyAsync(() ->
-                darkSkyService.getDirectionWind(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(DARKSKY_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
-                openWeatherMapService.getDirectionWind(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherBitFuture = CompletableFuture.supplyAsync(() ->
-                weatherBitService.getDirectionWind(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(WEATHERBIT_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherStackFuture = CompletableFuture.supplyAsync(() ->
-                weatherStackService.getDirectionWind(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(WEATHERSTACK_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
+    public WeatherDataFormat directionWindAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+        CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
+        darkSkyService.getDirectionWind(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(DARKSKY_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
+        openWeatherMapService.getDirectionWind(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> weatherBitFuture = CompletableFuture.supplyAsync(() ->
+        weatherBitService.getDirectionWind(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(WEATHERBIT_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> weatherStackFuture = CompletableFuture.supplyAsync(() ->
+        weatherStackService.getDirectionWind(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(WEATHERSTACK_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
 
         ArrayList<WeatherDataDto> list = new ArrayList<>();
         try {
-            list.add(darkSkyFuture.get().getBody());
-            list.add(openWeatherMapFuture.get().getBody());
-            list.add(weatherBitFuture.get().getBody());
-            list.add(weatherStackFuture.get().getBody());
+        list.add(darkSkyFuture.get());
+        list.add(openWeatherMapFuture.get());
+        list.add(weatherBitFuture.get());
+        list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("FullWeatherAggregation problem", e);
-            return RESPONSE_FAILED;
+        throw new WeatherForecastException("DirectionWindAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-            return new ResponseEntity(list, HttpStatus.OK);
+        return new WeatherDataJson(list);
         } else {
-            WeatherDataArr arrXml = new WeatherDataArr(listToArr(list));
-            return new ResponseEntity(arrXml, HttpStatus.OK);
+        return new WeatherDataXml(list);
         }
     }
 
@@ -471,48 +445,46 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
     @Override
     @Cacheable("feelsLikeTemperatureAggregation")
-    public ResponseEntity<WeatherDataDto> feelsLikeTemperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
-        CompletableFuture<ResponseEntity<WeatherDataDto>> darkSkyFuture = CompletableFuture.supplyAsync(() ->
-                darkSkyService.getFeelsLikeTemperature(city, countryCode), ExecutorSingleton.getExecutor())
+    public WeatherDataFormat feelsLikeTemperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+        CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
+                darkSkyService.getFeelsLikeTemperature(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
-                openWeatherMapService.getFeelsLikeTemperature(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
+                openWeatherMapService.getFeelsLikeTemperature(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherBitFuture = CompletableFuture.supplyAsync(() ->
-                weatherBitService.getFeelsLikeTemperature(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherBitFuture = CompletableFuture.supplyAsync(() ->
+                weatherBitService.getFeelsLikeTemperature(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERBIT_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherStackFuture = CompletableFuture.supplyAsync(() ->
-                weatherStackService.getFeelsLikeTemperature(city, countryCode), ExecutorSingleton.getExecutor())
+        CompletableFuture<WeatherDataDto> weatherStackFuture = CompletableFuture.supplyAsync(() ->
+                weatherStackService.getFeelsLikeTemperature(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(WEATHERSTACK_TIMEOUT,
                         API_TIMEOUT,
                         TimeUnit.SECONDS);
 
         ArrayList<WeatherDataDto> list = new ArrayList<>();
         try {
-            list.add(darkSkyFuture.get().getBody());
-            list.add(openWeatherMapFuture.get().getBody());
-            list.add(weatherBitFuture.get().getBody());
-            list.add(weatherStackFuture.get().getBody());
+            list.add(darkSkyFuture.get());
+            list.add(openWeatherMapFuture.get());
+            list.add(weatherBitFuture.get());
+            list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("FullWeatherAggregation problem", e);
-            return RESPONSE_FAILED;
+            throw new WeatherForecastException("FeelsLikeTemperatureAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-            return new ResponseEntity(list, HttpStatus.OK);
+            return new WeatherDataJson(list);
         } else {
-            WeatherDataArr arrXml = new WeatherDataArr(listToArr(list));
-            return new ResponseEntity(arrXml, HttpStatus.OK);
+            return new WeatherDataXml(list);
         }
     }
 
@@ -522,56 +494,46 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
     @Override
     @Cacheable("weatherDescriptionAggregation")
-    public ResponseEntity<WeatherDataDto> weatherDescriptionAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
-        CompletableFuture<ResponseEntity<WeatherDataDto>> darkSkyFuture = CompletableFuture.supplyAsync(() ->
-                darkSkyService.getWeatherDescription(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(DARKSKY_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
-                openWeatherMapService.getWeatherDescription(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherBitFuture = CompletableFuture.supplyAsync(() ->
-                weatherBitService.getWeatherDescription(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(WEATHERBIT_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
-        CompletableFuture<ResponseEntity<WeatherDataDto>> weatherStackFuture = CompletableFuture.supplyAsync(() ->
-                weatherStackService.getWeatherDescription(city, countryCode), ExecutorSingleton.getExecutor())
-                .completeOnTimeout(WEATHERSTACK_TIMEOUT,
-                        API_TIMEOUT,
-                        TimeUnit.SECONDS);
+    public WeatherDataFormat weatherDescriptionAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+        CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
+        darkSkyService.getWeatherDescription(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(DARKSKY_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> openWeatherMapFuture = CompletableFuture.supplyAsync(() ->
+        openWeatherMapService.getWeatherDescription(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(OPENWEATHERMAP_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> weatherBitFuture = CompletableFuture.supplyAsync(() ->
+        weatherBitService.getWeatherDescription(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(WEATHERBIT_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
+        CompletableFuture<WeatherDataDto> weatherStackFuture = CompletableFuture.supplyAsync(() ->
+        weatherStackService.getWeatherDescription(city, countryCode), executorSingleton.getExecutor())
+        .completeOnTimeout(WEATHERSTACK_TIMEOUT,
+        API_TIMEOUT,
+        TimeUnit.SECONDS);
 
         ArrayList<WeatherDataDto> list = new ArrayList<>();
         try {
-            list.add(darkSkyFuture.get().getBody());
-            list.add(openWeatherMapFuture.get().getBody());
-            list.add(weatherBitFuture.get().getBody());
-            list.add(weatherStackFuture.get().getBody());
+        list.add(darkSkyFuture.get());
+        list.add(openWeatherMapFuture.get());
+        list.add(weatherBitFuture.get());
+        list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("FullWeatherAggregation problem", e);
-            return RESPONSE_FAILED;
+        throw new WeatherForecastException("WeatherDescriptionAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-            return new ResponseEntity(list, HttpStatus.OK);
+        return new WeatherDataJson(list);
         } else {
-            WeatherDataArr arrXml = new WeatherDataArr(listToArr(list));
-            return new ResponseEntity(arrXml, HttpStatus.OK);
+        return new WeatherDataXml(list);
         }
-    }
-
-    private WeatherDataDto[] listToArr(ArrayList<WeatherDataDto> list) {
-        WeatherDataDto[] arr = new WeatherDataDto[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            arr[i] = list.get(i);
-        }
-        return arr;
     }
 }

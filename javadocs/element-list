@@ -2,6 +2,7 @@ ua.sumdu.yermolenko
 ua.sumdu.yermolenko.config
 ua.sumdu.yermolenko.controllers
 ua.sumdu.yermolenko.model
+ua.sumdu.yermolenko.model.weatherstack
 ua.sumdu.yermolenko.services
 ua.sumdu.yermolenko.services.impl
 ua.sumdu.yermolenko.tools

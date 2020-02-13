@@ -2,7 +2,7 @@ package ua.sumdu.yermolenko.tools;
 
 import org.springframework.stereotype.Component;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
-import ua.sumdu.yermolenko.model.WeatherStackData;
+import ua.sumdu.yermolenko.model.weatherstack.WeatherStackData;
 
 import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERSTACK_SERVICENAME;
 

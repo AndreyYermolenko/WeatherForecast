@@ -1,4 +1,4 @@
-package ua.sumdu.yermolenko.model;
+package ua.sumdu.yermolenko.model.weatherstack;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

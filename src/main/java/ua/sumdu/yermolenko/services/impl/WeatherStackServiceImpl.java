@@ -11,7 +11,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
-import ua.sumdu.yermolenko.model.WeatherStackData;
+import ua.sumdu.yermolenko.model.weatherstack.WeatherStackData;
 import ua.sumdu.yermolenko.services.WeatherStackService;
 import ua.sumdu.yermolenko.tools.WeatherDataConverter;
 
@@ -30,10 +30,8 @@ import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERSTACK_SERVICE
 public class WeatherStackServiceImpl implements WeatherStackService {
     private final static Logger logger = LogManager.getLogger(WeatherStackServiceImpl.class);
 
-    private final ResponseEntity<WeatherDataDto> RESPONSE_FAILED = new ResponseEntity<WeatherDataDto>(
-            new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
-                    "Response Failed. Server error."),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+    private final WeatherDataDto RESPONSE_FAILED = new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
+                    "Response Failed. Server error.");
     private final String PROBLEM_MESSAGE = "OpenWeatherMapService problem";
 
     @Value("${weatherstack.api.key}")
@@ -48,10 +46,10 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Cacheable("weatherStackTemperature")
-    public ResponseEntity<WeatherDataDto> getTemperature(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getTemperature(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -66,9 +64,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 return RESPONSE_FAILED;
             }
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
         }
     }
 
@@ -77,18 +75,10 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
-     */
-    /**
-     * Method getCityCoordinates executes an API request to obtain data
-     * on the coordinates of the city.
-     *
-     * @param city of type String
-     * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Cacheable("weatherStackCityCoordinates")
-    public ResponseEntity<WeatherDataDto> getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -103,9 +93,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 return RESPONSE_FAILED;
             }
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
         }
     }
 
@@ -114,11 +104,11 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("weatherStackPressure")
-    public ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getPressure(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -133,9 +123,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 return RESPONSE_FAILED;
             }
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
         }
     }
 
@@ -144,11 +134,11 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("weatherStackWindSpeed")
-    public ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getWindSpeed(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -163,9 +153,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 return RESPONSE_FAILED;
             }
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
         }
     }
 
@@ -174,11 +164,11 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("weatherStackHumidity")
-    public ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getHumidity(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -193,9 +183,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 return RESPONSE_FAILED;
             }
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
         }
     }
 
@@ -204,11 +194,11 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("weatherStackFullWeather")
-    public ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getFullWeather(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -223,9 +213,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 return RESPONSE_FAILED;
             }
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
         }
     }
 
@@ -234,11 +224,11 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("weatherStackSunriseTime")
-    public ResponseEntity<WeatherDataDto> getSunriseTime(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getSunriseTime(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -253,9 +243,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 return RESPONSE_FAILED;
             }
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
         }
     }
 
@@ -264,10 +254,10 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Cacheable("weatherStackFeelsLikeTemperature")
-    public ResponseEntity<WeatherDataDto> getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -282,9 +272,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 return RESPONSE_FAILED;
             }
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
         }
     }
 
@@ -293,10 +283,10 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Cacheable("weatherStackDirectionWind")
-    public ResponseEntity<WeatherDataDto> getDirectionWind(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getDirectionWind(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -311,9 +301,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 return RESPONSE_FAILED;
             }
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
         }
     }
 
@@ -325,7 +315,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
      * @return ResponseEntity<WeatherDataDto>
      */
     @Cacheable("weatherStackWeatherDescription")
-    public ResponseEntity<WeatherDataDto> getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -340,9 +330,9 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 return RESPONSE_FAILED;
             }
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
         }
     }
 

@@ -1,7 +1,6 @@
 package ua.sumdu.yermolenko.services;
 
 import lombok.NonNull;
-import org.springframework.http.ResponseEntity;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 
 /**
@@ -17,88 +16,88 @@ public interface WeatherBitService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
-    ResponseEntity<WeatherDataDto> getTemperature(@NonNull String city, @NonNull String countryCode);
+    WeatherDataDto getTemperature(@NonNull String city, @NonNull String countryCode);
 
     /**
      * Method getCityCoordinates executes an API request to obtain city coordinates.
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
-    ResponseEntity<WeatherDataDto> getCityCoordinates(@NonNull String city, @NonNull String countryCode);
+    WeatherDataDto getCityCoordinates(@NonNull String city, @NonNull String countryCode);
 
     /**
      * Method getPressure executes an API request to obtain pressure data.
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
-    ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode);
+    WeatherDataDto getPressure(@NonNull String city, @NonNull String countryCode);
 
     /**
      * Method getWindSpeed executes an API request to obtain wind speed data.
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
-    ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode);
+    WeatherDataDto getWindSpeed(@NonNull String city, @NonNull String countryCode);
 
     /**
      * Method getHumidity executes an API request to obtain humidity data.
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
-    ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode);
+    WeatherDataDto getHumidity(@NonNull String city, @NonNull String countryCode);
 
     /**
      * Method getFullWeather executes an API request to obtain current weather data.
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
-    ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode);
+    WeatherDataDto getFullWeather(@NonNull String city, @NonNull String countryCode);
 
     /**
      * Method getSunRiseTime executes an API request to obtain city sunrise time.
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
-    ResponseEntity<WeatherDataDto> getSunriseTime(@NonNull String city, @NonNull String countryCode);
+    WeatherDataDto getSunriseTime(@NonNull String city, @NonNull String countryCode);
 
     /**
      * Method getDirectionWind executes an API request to obtain direction wind data.
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
-    ResponseEntity<WeatherDataDto> getDirectionWind(@NonNull String city, @NonNull String countryCode);
+    WeatherDataDto getDirectionWind(@NonNull String city, @NonNull String countryCode);
 
     /**
      * Method getFeelsLikeTemperature executes an API request to obtain temperature how does it feel.
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
-    ResponseEntity<WeatherDataDto> getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode);
+    WeatherDataDto getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode);
 
     /**
      * Method getWeatherDescription executes an API request to obtain weather description.
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
-    ResponseEntity<WeatherDataDto> getWeatherDescription(@NonNull String city, @NonNull String countryCode);
+    WeatherDataDto getWeatherDescription(@NonNull String city, @NonNull String countryCode);
 }

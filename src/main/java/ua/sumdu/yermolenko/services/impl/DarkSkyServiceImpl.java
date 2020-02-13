@@ -39,10 +39,10 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Cacheable("darkSkyTemperature")
-    public ResponseEntity<WeatherDataDto> getTemperature(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getTemperature(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             JSONObject jsonObject = new JSONObject(response.getBody());
@@ -56,9 +56,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
         }
     }
 
@@ -67,10 +67,10 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Cacheable("darkSkyCityCoordinates")
-    public ResponseEntity<WeatherDataDto> getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             JSONObject jsonObject = new JSONObject(response.getBody());
@@ -86,9 +86,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             weatherDataDto.setLatitude(latitude);
             weatherDataDto.setLongitude(longitude);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
         }
     }
 
@@ -97,11 +97,11 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("darkSkyPressure")
-    public ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getPressure(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             JSONObject jsonObject = new JSONObject(response.getBody());
@@ -115,9 +115,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setPressure(pressure);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
         }
     }
 
@@ -126,11 +126,11 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("darkSkyWindSpeed")
-    public ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getWindSpeed(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             JSONObject jsonObject = new JSONObject(response.getBody());
@@ -144,9 +144,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setWindSpeed(windSpeed);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
         }
     }
 
@@ -155,11 +155,11 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("darkSkyHumidity")
-    public ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getHumidity(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             JSONObject jsonObject = new JSONObject(response.getBody());
@@ -173,9 +173,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setHumidity(humidity);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
         }
     }
 
@@ -184,11 +184,11 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("darkSkyFullWeather")
-    public ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getFullWeather(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             JSONObject jsonObject = new JSONObject(response.getBody());
@@ -214,9 +214,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             weatherDataDto.setWindSpeed(windSpeed);
             weatherDataDto.setHumidity(humidity);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
         }
     }
 
@@ -225,11 +225,11 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("darkSkySunriseTime")
-    public ResponseEntity<WeatherDataDto> getSunriseTime(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getSunriseTime(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             String sunrise = "Api does not support this field.";
@@ -238,9 +238,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             weatherDataDto.setName(city);
             weatherDataDto.setSunrise(sunrise);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
         }
     }
 
@@ -249,10 +249,10 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Cacheable("darkSkyFeelsLikeTemperature")
-    public ResponseEntity<WeatherDataDto> getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             JSONObject jsonObject = new JSONObject(response.getBody());
@@ -266,9 +266,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperatureFeelsLike(temperatureFeelsLike);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
         }
     }
 
@@ -277,10 +277,10 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Cacheable("darkSkyDirectionWind")
-    public ResponseEntity<WeatherDataDto> getDirectionWind(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getDirectionWind(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             String windDir = "Api does not support this field.";
@@ -291,9 +291,9 @@ public class DarkSkyServiceImpl implements DarkSkyService {
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setDirectionWind(windDir);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
         }
     }
 
@@ -302,21 +302,22 @@ public class DarkSkyServiceImpl implements DarkSkyService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Cacheable("darkSkyWeatherDescription")
-    public ResponseEntity<WeatherDataDto> getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             String weatherDesc = "Api does not support this field.";
             WeatherDataDto weatherDataDto = new WeatherDataDto();
             weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setCountry(countryCode);
             weatherDataDto.setName(city);
             weatherDataDto.setWeatherDescription(weatherDesc);
 
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<>(new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
         }
     }
 

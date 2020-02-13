@@ -1,8 +1,7 @@
 package ua.sumdu.yermolenko.services;
 
 import lombok.NonNull;
-import org.springframework.http.ResponseEntity;
-import ua.sumdu.yermolenko.model.WeatherDataDto;
+import ua.sumdu.yermolenko.model.WeatherDataFormat;
 
 /**
  * Interface WeatherAggregationDataService  is implemented by the class, which implements
@@ -18,9 +17,9 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
-    ResponseEntity<WeatherDataDto> temperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+    WeatherDataFormat temperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
     /**
      * Method WeatherAggregationData returns city coordinates from different APIs.
@@ -28,9 +27,9 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
-    ResponseEntity<WeatherDataDto> cityCoordinatesAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+    WeatherDataFormat cityCoordinatesAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
     /**
      * Method WeatherAggregationData returns pressure data from different APIs.
@@ -38,9 +37,9 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
-    ResponseEntity<WeatherDataDto> pressureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+    WeatherDataFormat pressureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
     /**
      * Method WeatherAggregationData returns wind speed data from different APIs.
@@ -48,9 +47,9 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
-    ResponseEntity<WeatherDataDto> windSpeedAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+    WeatherDataFormat windSpeedAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
     /**
      * Method WeatherAggregationData returns humidity data from different APIs.
@@ -58,9 +57,9 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
-    ResponseEntity<WeatherDataDto> humidityAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+    WeatherDataFormat humidityAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
     /**
      * Method WeatherAggregationData returns weather data from different APIs.
@@ -68,9 +67,9 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
-    ResponseEntity<WeatherDataDto> fullWeatherAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+    WeatherDataFormat fullWeatherAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
     /**
      * Method WeatherAggregationData returns city sunrise time from different APIs.
@@ -78,9 +77,9 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
-    ResponseEntity<WeatherDataDto> sunriseTimeAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+    WeatherDataFormat sunriseTimeAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
     /**
      * Method WeatherAggregationData returns direction wind from different APIs.
@@ -88,9 +87,9 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
-    ResponseEntity<WeatherDataDto> directionWindAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+    WeatherDataFormat directionWindAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
     /**
      * Method WeatherAggregationData returns temperature how does it feel from different APIs.
@@ -98,9 +97,9 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
-    ResponseEntity<WeatherDataDto> feelsLikeTemperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+    WeatherDataFormat feelsLikeTemperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 
     /**
      * Method WeatherAggregationData returns weather description from different APIs.
@@ -108,7 +107,7 @@ public interface WeatherAggregationDataService {
      * @param city of type String
      * @param countryCode of type String
      * @param ext of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataFormat
      */
-    ResponseEntity<WeatherDataDto> weatherDescriptionAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
+    WeatherDataFormat weatherDescriptionAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext);
 }

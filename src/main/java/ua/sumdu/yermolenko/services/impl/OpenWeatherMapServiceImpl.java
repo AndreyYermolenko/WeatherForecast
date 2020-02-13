@@ -34,10 +34,8 @@ import static ua.sumdu.yermolenko.services.ServiceConstants.OPENWEATHERMAP_SERVI
 @Service
 public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
     private final static Logger logger = LogManager.getLogger(OpenWeatherMapServiceImpl.class);
-    private final ResponseEntity<WeatherDataDto> RESPONSE_FAILED = new ResponseEntity<WeatherDataDto>(
-            new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
-                    "Response Failed. Server error."),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+    private final WeatherDataDto RESPONSE_FAILED = new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
+                    "Response Failed. Server error.");
     private final String PROBLEM_MESSAGE = "OpenWeatherMapService problem";
 
     @Value("${openweathermap.api.key}")
@@ -50,10 +48,10 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Cacheable("openWeatherMapTemperature")
-    public ResponseEntity<WeatherDataDto> getTemperature(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getTemperature(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -83,9 +81,9 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setTemperature(temperature);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
         }
     }
 
@@ -94,10 +92,10 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Cacheable("openWeatherMapCityCoordinates")
-    public ResponseEntity<WeatherDataDto> getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getCityCoordinates(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -130,9 +128,9 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setLongitude(longitude);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
         }
     }
 
@@ -141,11 +139,11 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("openWeatherMapPressure")
-    public ResponseEntity<WeatherDataDto> getPressure(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getPressure(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -175,9 +173,9 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setPressure(pressure);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
         }
     }
 
@@ -186,11 +184,11 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("openWeatherMapWindSpeed")
-    public ResponseEntity<WeatherDataDto> getWindSpeed(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getWindSpeed(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -220,9 +218,9 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setWindSpeed(windSpeed);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
         }
     }
 
@@ -231,11 +229,11 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("openWeatherMapCityHumidity")
-    public ResponseEntity<WeatherDataDto> getHumidity(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getHumidity(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -265,9 +263,9 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setHumidity(humidity);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
         }
     }
 
@@ -276,11 +274,11 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return String
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("openWeatherMapFullWeather")
-    public ResponseEntity<WeatherDataDto> getFullWeather(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getFullWeather(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -319,9 +317,9 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setHumidity(humidity);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
         }
     }
 
@@ -330,11 +328,11 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Override
     @Cacheable("openWeatherMapSunriseTime")
-    public ResponseEntity<WeatherDataDto> getSunriseTime(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getSunriseTime(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -364,9 +362,9 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setSunrise(sunrise);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
         }
     }
 
@@ -375,10 +373,10 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Cacheable("openWeatherMapFeelsLikeTemperature")
-    public ResponseEntity<WeatherDataDto> getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getFeelsLikeTemperature(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -408,9 +406,9 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setTemperatureFeelsLike(temperatureFeelsLike);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
         }
     }
 
@@ -419,10 +417,10 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Cacheable("openWeatherMapDirectionWind")
-    public ResponseEntity<WeatherDataDto> getDirectionWind(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getDirectionWind(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -452,9 +450,9 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setDirectionWind(windDir);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
         }
     }
 
@@ -463,10 +461,10 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
      *
      * @param city of type String
      * @param countryCode of type String
-     * @return ResponseEntity<WeatherDataDto>
+     * @return WeatherDataDto
      */
     @Cacheable("openWeatherMapWeatherDescription")
-    public ResponseEntity<WeatherDataDto> getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
+    public WeatherDataDto getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         String weatherDescription = "Api does not support this field.";
 
@@ -477,9 +475,9 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         weatherDataDto.setWeatherDescription(weatherDescription);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(weatherDataDto, response.getStatusCode());
+            return weatherDataDto;
         } else {
-            return new ResponseEntity<WeatherDataDto>(new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody()), response.getStatusCode());
+            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
         }
     }
 
