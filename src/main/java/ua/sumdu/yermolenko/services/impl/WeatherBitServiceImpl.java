@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.WeatherBitService;
 
-import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERBIT_SERVICENAME;
+import static ua.sumdu.yermolenko.constants.ServiceConstants.WEATHERBIT_SERVICENAME;
 
 /**
  * Class WeatherBitServiceImpl implements interface WeatherBitService.
@@ -20,7 +20,6 @@ import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERBIT_SERVICENA
  */
 @Service
 public class WeatherBitServiceImpl implements WeatherBitService {
-
     @Value("${weatherbit.api.key}")
     private String apiKey;
     @Value("${weatherbit.url}")

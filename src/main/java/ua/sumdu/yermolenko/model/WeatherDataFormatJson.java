@@ -11,13 +11,13 @@ import java.util.ArrayList;
  * Created on 07.02.2020
  */
 @Data
-public class WeatherDataJson extends WeatherDataFormat {
+public class WeatherDataFormatJson implements WeatherDataFormat {
     private ArrayList<WeatherDataDto> weatherDataList;
 
-    public WeatherDataJson() {
+    public WeatherDataFormatJson() {
     }
 
-    public WeatherDataJson(ArrayList<WeatherDataDto> weatherDataList) {
+    public WeatherDataFormatJson(ArrayList<WeatherDataDto> weatherDataList) {
         this.weatherDataList = weatherDataList;
     }
 }

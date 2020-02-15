@@ -1,17 +1,16 @@
 package ua.sumdu.yermolenko.services.impl;
 
 import lombok.NonNull;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ua.sumdu.yermolenko.config.ExecutorSingleton;
-import ua.sumdu.yermolenko.model.WeatherDataFormat;
-import ua.sumdu.yermolenko.model.WeatherDataJson;
-import ua.sumdu.yermolenko.model.WeatherDataXml;
+import ua.sumdu.yermolenko.exceptions.WeatherForecastException;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
+import ua.sumdu.yermolenko.model.WeatherDataFormat;
+import ua.sumdu.yermolenko.model.WeatherDataFormatJson;
+import ua.sumdu.yermolenko.model.WeatherDataFormatXml;
 import ua.sumdu.yermolenko.services.*;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import static ua.sumdu.yermolenko.services.ServiceConstants.*;
+import static ua.sumdu.yermolenko.constants.ServiceConstants.*;
 
 /**
  * Class WeatherAggregationDataServiceImpl implements interface WeatherAggregationDataService.
@@ -29,12 +28,14 @@ import static ua.sumdu.yermolenko.services.ServiceConstants.*;
  */
 @Service
 public class WeatherAggregationDataServiceImpl implements WeatherAggregationDataService {
-    private final static Logger logger = LogManager.getLogger(WeatherAggregationDataServiceImpl.class);
-
-    private final WeatherDataDto DARKSKY_TIMEOUT = new WeatherDataDto(DARKSKY_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
-    private final WeatherDataDto OPENWEATHERMAP_TIMEOUT = new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
-    private final WeatherDataDto WEATHERBIT_TIMEOUT = new WeatherDataDto(WEATHERBIT_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
-    private final WeatherDataDto WEATHERSTACK_TIMEOUT = new WeatherDataDto(WEATHERSTACK_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
+    private final WeatherDataDto DARKSKY_TIMEOUT =
+            new WeatherDataDto(DARKSKY_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
+    private final WeatherDataDto OPENWEATHERMAP_TIMEOUT =
+            new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
+    private final WeatherDataDto WEATHERBIT_TIMEOUT =
+            new WeatherDataDto(WEATHERBIT_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
+    private final WeatherDataDto WEATHERSTACK_TIMEOUT =
+            new WeatherDataDto(WEATHERSTACK_SERVICENAME,TIMEOUT_EXCEPTION_MESSAGE);
 
     @Autowired
     private DarkSkyService darkSkyService;
@@ -57,7 +58,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      */
     @Override
     @Cacheable("temperatureAggregation")
-    public WeatherDataFormat temperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+    public WeatherDataFormat temperatureAggregation(@NonNull String city,
+                                                    @NonNull String countryCode,
+                                                    @NonNull String ext) {
         CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
                 darkSkyService.getTemperature(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
@@ -90,9 +93,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         }
 
         if ("json".equals(ext)) {
-            return new WeatherDataJson(list);
+            return new WeatherDataFormatJson(list);
         } else {
-            return new WeatherDataXml(list);
+            return new WeatherDataFormatXml(list);
         }
     }
 
@@ -106,7 +109,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      */
     @Override
     @Cacheable("cityCoordinatesAggregation")
-    public WeatherDataFormat cityCoordinatesAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+    public WeatherDataFormat cityCoordinatesAggregation(@NonNull String city,
+                                                        @NonNull String countryCode,
+                                                        @NonNull String ext) {
         CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
                 darkSkyService.getCityCoordinates(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
@@ -139,9 +144,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         }
 
         if ("json".equals(ext)) {
-            return new WeatherDataJson(list);
+            return new WeatherDataFormatJson(list);
         } else {
-            return new WeatherDataXml(list);
+            return new WeatherDataFormatXml(list);
         }
     }
 
@@ -155,7 +160,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      */
     @Override
     @Cacheable("pressureAggregation")
-    public WeatherDataFormat pressureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+    public WeatherDataFormat pressureAggregation(@NonNull String city,
+                                                 @NonNull String countryCode,
+                                                 @NonNull String ext) {
         CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
                 darkSkyService.getPressure(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
@@ -188,9 +195,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         }
 
         if ("json".equals(ext)) {
-            return new WeatherDataJson(list);
+            return new WeatherDataFormatJson(list);
         } else {
-            return new WeatherDataXml(list);
+            return new WeatherDataFormatXml(list);
         }
     }
 
@@ -204,7 +211,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      */
     @Override
     @Cacheable("windSpeedAggregation")
-    public WeatherDataFormat windSpeedAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+    public WeatherDataFormat windSpeedAggregation(@NonNull String city,
+                                                  @NonNull String countryCode,
+                                                  @NonNull String ext) {
         CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
                 darkSkyService.getWindSpeed(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
@@ -237,9 +246,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         }
 
         if ("json".equals(ext)) {
-            return new WeatherDataJson(list);
+            return new WeatherDataFormatJson(list);
         } else {
-            return new WeatherDataXml(list);
+            return new WeatherDataFormatXml(list);
         }
     }
 
@@ -253,7 +262,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      */
     @Override
     @Cacheable("humidityAggregation")
-    public WeatherDataFormat humidityAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+    public WeatherDataFormat humidityAggregation(@NonNull String city,
+                                                 @NonNull String countryCode,
+                                                 @NonNull String ext) {
         CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
                 darkSkyService.getHumidity(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
@@ -286,9 +297,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         }
 
         if ("json".equals(ext)) {
-            return new WeatherDataJson(list);
+            return new WeatherDataFormatJson(list);
         } else {
-            return new WeatherDataXml(list);
+            return new WeatherDataFormatXml(list);
         }
     }
 
@@ -302,7 +313,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      */
     @Override
     @Cacheable("fullWeatherAggregation")
-    public WeatherDataFormat fullWeatherAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+    public WeatherDataFormat fullWeatherAggregation(@NonNull String city,
+                                                    @NonNull String countryCode,
+                                                    @NonNull String ext) {
         CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
         darkSkyService.getFullWeather(city, countryCode), executorSingleton.getExecutor())
         .completeOnTimeout(DARKSKY_TIMEOUT,
@@ -335,9 +348,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         }
 
         if ("json".equals(ext)) {
-        return new WeatherDataJson(list);
+        return new WeatherDataFormatJson(list);
         } else {
-        return new WeatherDataXml(list);
+        return new WeatherDataFormatXml(list);
         }
     }
 
@@ -351,7 +364,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      */
     @Override
     @Cacheable("sunriseTimeAggregation")
-    public WeatherDataFormat sunriseTimeAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+    public WeatherDataFormat sunriseTimeAggregation(@NonNull String city,
+                                                    @NonNull String countryCode,
+                                                    @NonNull String ext) {
         CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
         darkSkyService.getSunriseTime(city, countryCode), executorSingleton.getExecutor())
         .completeOnTimeout(DARKSKY_TIMEOUT,
@@ -380,13 +395,13 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         list.add(weatherBitFuture.get());
         list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-        throw new WeatherForecastException("SunriseTimeAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new WeatherForecastException("SunriseTimeAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-        return new WeatherDataJson(list);
+        return new WeatherDataFormatJson(list);
         } else {
-        return new WeatherDataXml(list);
+        return new WeatherDataFormatXml(list);
         }
     }
 
@@ -400,7 +415,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      */
     @Override
     @Cacheable("directionWindAggregation")
-    public WeatherDataFormat directionWindAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+    public WeatherDataFormat directionWindAggregation(@NonNull String city,
+                                                      @NonNull String countryCode,
+                                                      @NonNull String ext) {
         CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
         darkSkyService.getDirectionWind(city, countryCode), executorSingleton.getExecutor())
         .completeOnTimeout(DARKSKY_TIMEOUT,
@@ -429,13 +446,13 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         list.add(weatherBitFuture.get());
         list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-        throw new WeatherForecastException("DirectionWindAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new WeatherForecastException("DirectionWindAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-        return new WeatherDataJson(list);
+        return new WeatherDataFormatJson(list);
         } else {
-        return new WeatherDataXml(list);
+        return new WeatherDataFormatXml(list);
         }
     }
 
@@ -449,7 +466,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      */
     @Override
     @Cacheable("feelsLikeTemperatureAggregation")
-    public WeatherDataFormat feelsLikeTemperatureAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+    public WeatherDataFormat feelsLikeTemperatureAggregation(@NonNull String city,
+                                                             @NonNull String countryCode,
+                                                             @NonNull String ext) {
         CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
                 darkSkyService.getFeelsLikeTemperature(city, countryCode), executorSingleton.getExecutor())
                 .completeOnTimeout(DARKSKY_TIMEOUT,
@@ -478,13 +497,14 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
             list.add(weatherBitFuture.get());
             list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-            throw new WeatherForecastException("FeelsLikeTemperatureAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new WeatherForecastException("FeelsLikeTemperatureAggregation problem",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-            return new WeatherDataJson(list);
+            return new WeatherDataFormatJson(list);
         } else {
-            return new WeatherDataXml(list);
+            return new WeatherDataFormatXml(list);
         }
     }
 
@@ -498,7 +518,9 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
      */
     @Override
     @Cacheable("weatherDescriptionAggregation")
-    public WeatherDataFormat weatherDescriptionAggregation(@NonNull String city, @NonNull String countryCode, @NonNull String ext) {
+    public WeatherDataFormat weatherDescriptionAggregation(@NonNull String city,
+                                                           @NonNull String countryCode,
+                                                           @NonNull String ext) {
         CompletableFuture<WeatherDataDto> darkSkyFuture = CompletableFuture.supplyAsync(() ->
         darkSkyService.getWeatherDescription(city, countryCode), executorSingleton.getExecutor())
         .completeOnTimeout(DARKSKY_TIMEOUT,
@@ -527,13 +549,14 @@ public class WeatherAggregationDataServiceImpl implements WeatherAggregationData
         list.add(weatherBitFuture.get());
         list.add(weatherStackFuture.get());
         } catch (InterruptedException | ExecutionException e) {
-        throw new WeatherForecastException("WeatherDescriptionAggregation problem", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new WeatherForecastException("WeatherDescriptionAggregation problem",
+                HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if ("json".equals(ext)) {
-        return new WeatherDataJson(list);
+        return new WeatherDataFormatJson(list);
         } else {
-        return new WeatherDataXml(list);
+        return new WeatherDataFormatXml(list);
         }
     }
 }

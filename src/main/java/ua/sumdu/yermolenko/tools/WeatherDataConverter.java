@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.model.weatherstack.WeatherStackData;
 
-import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERSTACK_SERVICENAME;
+import static ua.sumdu.yermolenko.constants.ServiceConstants.WEATHERSTACK_SERVICENAME;
 
 /**
  * Class WeatherDataConverter is used for parsing weather API data.
@@ -33,7 +33,8 @@ public class WeatherDataConverter {
     }
 
     /**
-     * Method toJsonCityCoordinatesConvert Method toJsonHumidityConvert converts city coordinates data from WeatherStack API.
+     * Method toJsonCityCoordinatesConvert Method toJsonHumidityConvert converts city coordinates data
+     * from WeatherStack API.
      *
      * @param inputData of type WeatherStackData
      * @return WeatherDataDto

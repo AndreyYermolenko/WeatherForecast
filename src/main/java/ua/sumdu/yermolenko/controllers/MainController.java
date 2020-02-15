@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.sumdu.yermolenko.model.WeatherDataJson;
-import ua.sumdu.yermolenko.model.WeatherDataXml;
+import ua.sumdu.yermolenko.model.WeatherDataFormatJson;
+import ua.sumdu.yermolenko.model.WeatherDataFormatXml;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.WeatherAggregationDataService;
-import ua.sumdu.yermolenko.services.WeatherForecastException;
+import ua.sumdu.yermolenko.exceptions.WeatherForecastException;
 
 /**
  * Class WeatherAggregationDataController provides work with DarkSky API,
@@ -21,7 +21,7 @@ import ua.sumdu.yermolenko.services.WeatherForecastException;
  */
 @RestController
 public class MainController {
-    private final static Logger logger = LogManager.getLogger(MainController.class);
+    private final static Logger LOGGER = LogManager.getLogger(MainController.class);
 
     @Autowired
     private WeatherAggregationDataService weatherAggregationDataService;
@@ -38,8 +38,9 @@ public class MainController {
      */
     @RequestMapping(path = "/temperature/{countryCode}/{city}", method = RequestMethod.GET)
     public ResponseEntity<?> temperatureAggregation(@PathVariable String countryCode,
-                                                                    @PathVariable String city,
-                                                                    @RequestParam(name = "ext", defaultValue = "json", required = false) String ext) {
+                                                    @PathVariable String city,
+                                                    @RequestParam(name = "ext", defaultValue = "json", required = false)
+                                                                String ext) {
         String requestExtension = ext;
         if (!ext.matches("xml|json")) {
             requestExtension = "json";
@@ -47,14 +48,16 @@ public class MainController {
 
         try {
             if (requestExtension.equals("json")) {
-                WeatherDataJson weatherDataJson = (WeatherDataJson) weatherAggregationDataService.temperatureAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatJson weatherDataJson = (WeatherDataFormatJson) weatherAggregationDataService
+                        .temperatureAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataJson, HttpStatus.OK);
             } else {
-                WeatherDataXml weatherDataXml = (WeatherDataXml) weatherAggregationDataService.temperatureAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatXml weatherDataXml = (WeatherDataFormatXml) weatherAggregationDataService
+                        .temperatureAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataXml, HttpStatus.OK);
             }
         } catch (WeatherForecastException e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity(e.getMessage(), e.getStatusCode());
         }
     }
@@ -80,14 +83,16 @@ public class MainController {
 
         try {
             if (requestExtension.equals("json")) {
-                WeatherDataJson weatherDataJson = (WeatherDataJson) weatherAggregationDataService.cityCoordinatesAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatJson weatherDataJson = (WeatherDataFormatJson) weatherAggregationDataService
+                        .cityCoordinatesAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataJson, HttpStatus.OK);
             } else {
-                WeatherDataXml weatherDataXml = (WeatherDataXml) weatherAggregationDataService.cityCoordinatesAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatXml weatherDataXml = (WeatherDataFormatXml) weatherAggregationDataService
+                        .cityCoordinatesAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataXml, HttpStatus.OK);
             }
         } catch (WeatherForecastException e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity(e.getMessage(), e.getStatusCode());
         }
     }
@@ -113,14 +118,16 @@ public class MainController {
 
         try {
             if (requestExtension.equals("json")) {
-                WeatherDataJson weatherDataJson = (WeatherDataJson) weatherAggregationDataService.pressureAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatJson weatherDataJson = (WeatherDataFormatJson) weatherAggregationDataService
+                        .pressureAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataJson, HttpStatus.OK);
             } else {
-                WeatherDataXml weatherDataXml = (WeatherDataXml) weatherAggregationDataService.pressureAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatXml weatherDataXml = (WeatherDataFormatXml) weatherAggregationDataService
+                        .pressureAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataXml, HttpStatus.OK);
             }
         } catch (WeatherForecastException e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity(e.getMessage(), e.getStatusCode());
         }
     }
@@ -146,14 +153,16 @@ public class MainController {
 
         try {
             if (requestExtension.equals("json")) {
-                WeatherDataJson weatherDataJson = (WeatherDataJson) weatherAggregationDataService.windSpeedAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatJson weatherDataJson = (WeatherDataFormatJson) weatherAggregationDataService
+                        .windSpeedAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataJson, HttpStatus.OK);
             } else {
-                WeatherDataXml weatherDataXml = (WeatherDataXml) weatherAggregationDataService.windSpeedAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatXml weatherDataXml = (WeatherDataFormatXml) weatherAggregationDataService
+                        .windSpeedAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataXml, HttpStatus.OK);
             }
         } catch (WeatherForecastException e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity(e.getMessage(), e.getStatusCode());
         }
     }
@@ -179,14 +188,16 @@ public class MainController {
 
         try {
             if (requestExtension.equals("json")) {
-                WeatherDataJson weatherDataJson = (WeatherDataJson) weatherAggregationDataService.humidityAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatJson weatherDataJson = (WeatherDataFormatJson) weatherAggregationDataService
+                        .humidityAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataJson, HttpStatus.OK);
             } else {
-                WeatherDataXml weatherDataXml = (WeatherDataXml) weatherAggregationDataService.humidityAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatXml weatherDataXml = (WeatherDataFormatXml) weatherAggregationDataService
+                        .humidityAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataXml, HttpStatus.OK);
             }
         } catch (WeatherForecastException e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity(e.getMessage(), e.getStatusCode());
         }
     }
@@ -212,14 +223,16 @@ public class MainController {
 
         try {
             if (requestExtension.equals("json")) {
-                WeatherDataJson weatherDataJson = (WeatherDataJson) weatherAggregationDataService.fullWeatherAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatJson weatherDataJson = (WeatherDataFormatJson) weatherAggregationDataService
+                        .fullWeatherAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataJson, HttpStatus.OK);
             } else {
-                WeatherDataXml weatherDataXml = (WeatherDataXml) weatherAggregationDataService.fullWeatherAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatXml weatherDataXml = (WeatherDataFormatXml) weatherAggregationDataService
+                        .fullWeatherAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataXml, HttpStatus.OK);
             }
         } catch (WeatherForecastException e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity(e.getMessage(), e.getStatusCode());
         }
     }
@@ -245,14 +258,16 @@ public class MainController {
 
         try {
             if (requestExtension.equals("json")) {
-                WeatherDataJson weatherDataJson = (WeatherDataJson) weatherAggregationDataService.sunriseTimeAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatJson weatherDataJson = (WeatherDataFormatJson) weatherAggregationDataService
+                        .sunriseTimeAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataJson, HttpStatus.OK);
             } else {
-                WeatherDataXml weatherDataXml = (WeatherDataXml) weatherAggregationDataService.sunriseTimeAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatXml weatherDataXml = (WeatherDataFormatXml) weatherAggregationDataService
+                        .sunriseTimeAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataXml, HttpStatus.OK);
             }
         } catch (WeatherForecastException e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity(e.getMessage(), e.getStatusCode());
         }
     }
@@ -278,14 +293,16 @@ public class MainController {
 
         try {
             if (requestExtension.equals("json")) {
-                WeatherDataJson weatherDataJson = (WeatherDataJson) weatherAggregationDataService.directionWindAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatJson weatherDataJson = (WeatherDataFormatJson) weatherAggregationDataService
+                        .directionWindAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataJson, HttpStatus.OK);
             } else {
-                WeatherDataXml weatherDataXml = (WeatherDataXml) weatherAggregationDataService.directionWindAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatXml weatherDataXml = (WeatherDataFormatXml) weatherAggregationDataService
+                        .directionWindAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataXml, HttpStatus.OK);
             }
         } catch (WeatherForecastException e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity(e.getMessage(), e.getStatusCode());
         }
     }
@@ -311,14 +328,16 @@ public class MainController {
 
         try {
             if (requestExtension.equals("json")) {
-                WeatherDataJson weatherDataJson = (WeatherDataJson) weatherAggregationDataService.feelsLikeTemperatureAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatJson weatherDataJson = (WeatherDataFormatJson) weatherAggregationDataService
+                        .feelsLikeTemperatureAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataJson, HttpStatus.OK);
             } else {
-                WeatherDataXml weatherDataXml = (WeatherDataXml) weatherAggregationDataService.feelsLikeTemperatureAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatXml weatherDataXml = (WeatherDataFormatXml) weatherAggregationDataService
+                        .feelsLikeTemperatureAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataXml, HttpStatus.OK);
             }
         } catch (WeatherForecastException e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity(e.getMessage(), e.getStatusCode());
         }
     }
@@ -344,14 +363,16 @@ public class MainController {
 
         try {
             if (requestExtension.equals("json")) {
-                WeatherDataJson weatherDataJson = (WeatherDataJson) weatherAggregationDataService.weatherDescriptionAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatJson weatherDataJson = (WeatherDataFormatJson) weatherAggregationDataService
+                        .weatherDescriptionAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataJson, HttpStatus.OK);
             } else {
-                WeatherDataXml weatherDataXml = (WeatherDataXml) weatherAggregationDataService.weatherDescriptionAggregation(city, countryCode, requestExtension);
+                WeatherDataFormatXml weatherDataXml = (WeatherDataFormatXml) weatherAggregationDataService
+                        .weatherDescriptionAggregation(city, countryCode, requestExtension);
                 return new ResponseEntity(weatherDataXml, HttpStatus.OK);
             }
         } catch (WeatherForecastException e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity(e.getMessage(), e.getStatusCode());
         }
     }

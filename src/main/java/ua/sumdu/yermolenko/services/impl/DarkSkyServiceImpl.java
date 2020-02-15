@@ -16,7 +16,7 @@ import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.CityCoordinatesService;
 import ua.sumdu.yermolenko.services.DarkSkyService;
 
-import static ua.sumdu.yermolenko.services.ServiceConstants.DARKSKY_SERVICENAME;
+import static ua.sumdu.yermolenko.constants.ServiceConstants.DARKSKY_SERVICENAME;
 
 /**
  * Class DarkSkyServiceImpl implements interface DarkSkyService.
@@ -26,7 +26,6 @@ import static ua.sumdu.yermolenko.services.ServiceConstants.DARKSKY_SERVICENAME;
  */
 @Service
 public class DarkSkyServiceImpl implements DarkSkyService {
-    private final static Logger logger = LogManager.getLogger(DarkSkyServiceImpl.class);
     @Value("${darksky.api.key}")
     private String apiKey;
     @Value("${darksky.url}")
@@ -334,7 +333,8 @@ public class DarkSkyServiceImpl implements DarkSkyService {
         } catch (JSONException | IllegalArgumentException e) {
             return new ResponseEntity<String>("City not found", HttpStatus.BAD_REQUEST);
         } catch (HttpServerErrorException e) {
-            return new ResponseEntity<String>("City Coordinates Server Exception: " + e.toString(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("City Coordinates Server Exception: " + e.toString(),
+                    HttpStatus.BAD_REQUEST);
         }
 
         ResponseEntity<String> response = restTemplate.exchange(

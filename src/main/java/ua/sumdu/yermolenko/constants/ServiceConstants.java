@@ -1,4 +1,4 @@
-package ua.sumdu.yermolenko.services;
+package ua.sumdu.yermolenko.constants;
 
 import java.io.File;
 import java.io.FileReader;

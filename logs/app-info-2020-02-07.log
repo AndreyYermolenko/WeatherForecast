@@ -71,31 +71,31 @@ java.lang.RuntimeException: null
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) [?:?]
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) [tomcat-embed-core-8.5.28.jar:8.5.28]
 	at java.lang.Thread.run(Thread.java:835) [?:?]
-[ERROR] 2020-02-07 23:56:51.079 [http-nio-8081-exec-1] [dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is org.springframework.http.converter.HttpMessageConversionException: Could not instantiate JAXBContext for class [class ua.sumdu.yermolenko.model.WeatherDataXml]: 4 counts of IllegalAnnotationExceptions; nested exception is com.sun.xml.bind.v2.runtime.IllegalAnnotationsException: 4 counts of IllegalAnnotationExceptions
+[ERROR] 2020-02-07 23:56:51.079 [http-nio-8081-exec-1] [dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is org.springframework.http.converter.HttpMessageConversionException: Could not instantiate JAXBContext for class [class ua.sumdu.yermolenko.model.WeatherDataFormatXml]: 4 counts of IllegalAnnotationExceptions; nested exception is com.sun.xml.bind.v2.runtime.IllegalAnnotationsException: 4 counts of IllegalAnnotationExceptions
 Property directionWind is present but not specified in @XmlType.propOrder
 	this problem is related to the following location:
 		at public java.lang.String ua.sumdu.yermolenko.model.WeatherDataDto.getDirectionWind()
 		at ua.sumdu.yermolenko.model.WeatherDataDto
-		at public ua.sumdu.yermolenko.model.WeatherDataDto[] ua.sumdu.yermolenko.model.WeatherDataXml.getWeatherDataDto()
-		at ua.sumdu.yermolenko.model.WeatherDataXml
+		at public ua.sumdu.yermolenko.model.WeatherDataDto[] ua.sumdu.yermolenko.model.WeatherDataFormatXml.getWeatherDataDto()
+		at ua.sumdu.yermolenko.model.WeatherDataFormatXml
 Property sunrise is present but not specified in @XmlType.propOrder
 	this problem is related to the following location:
 		at public java.lang.String ua.sumdu.yermolenko.model.WeatherDataDto.getSunrise()
 		at ua.sumdu.yermolenko.model.WeatherDataDto
-		at public ua.sumdu.yermolenko.model.WeatherDataDto[] ua.sumdu.yermolenko.model.WeatherDataXml.getWeatherDataDto()
-		at ua.sumdu.yermolenko.model.WeatherDataXml
+		at public ua.sumdu.yermolenko.model.WeatherDataDto[] ua.sumdu.yermolenko.model.WeatherDataFormatXml.getWeatherDataDto()
+		at ua.sumdu.yermolenko.model.WeatherDataFormatXml
 Property temperatureFeelsLike is present but not specified in @XmlType.propOrder
 	this problem is related to the following location:
 		at public java.lang.String ua.sumdu.yermolenko.model.WeatherDataDto.getTemperatureFeelsLike()
 		at ua.sumdu.yermolenko.model.WeatherDataDto
-		at public ua.sumdu.yermolenko.model.WeatherDataDto[] ua.sumdu.yermolenko.model.WeatherDataXml.getWeatherDataDto()
-		at ua.sumdu.yermolenko.model.WeatherDataXml
+		at public ua.sumdu.yermolenko.model.WeatherDataDto[] ua.sumdu.yermolenko.model.WeatherDataFormatXml.getWeatherDataDto()
+		at ua.sumdu.yermolenko.model.WeatherDataFormatXml
 Property weatherDescription is present but not specified in @XmlType.propOrder
 	this problem is related to the following location:
 		at public java.lang.String ua.sumdu.yermolenko.model.WeatherDataDto.getWeatherDescription()
 		at ua.sumdu.yermolenko.model.WeatherDataDto
-		at public ua.sumdu.yermolenko.model.WeatherDataDto[] ua.sumdu.yermolenko.model.WeatherDataXml.getWeatherDataDto()
-		at ua.sumdu.yermolenko.model.WeatherDataXml
+		at public ua.sumdu.yermolenko.model.WeatherDataDto[] ua.sumdu.yermolenko.model.WeatherDataFormatXml.getWeatherDataDto()
+		at ua.sumdu.yermolenko.model.WeatherDataFormatXml
 ] with root cause
 com.sun.xml.bind.v2.runtime.IllegalAnnotationsException: 4 counts of IllegalAnnotationExceptions
 	at com.sun.xml.bind.v2.runtime.IllegalAnnotationsException$Builder.check(IllegalAnnotationsException.java:106) ~[jaxb-runtime-2.3.0-b170127.1453.jar:2.3.0-b170127.1453]

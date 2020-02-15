@@ -1,4 +1,4 @@
-package ua.sumdu.yermolenko.services;
+package ua.sumdu.yermolenko.exceptions;
 
 import org.springframework.http.HttpStatus;
 
@@ -26,7 +26,9 @@ public class WeatherForecastException extends RuntimeException {
         super(cause);
     }
 
-    protected WeatherForecastException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected WeatherForecastException(String message, Throwable cause,
+                                       boolean enableSuppression,
+                                       boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 

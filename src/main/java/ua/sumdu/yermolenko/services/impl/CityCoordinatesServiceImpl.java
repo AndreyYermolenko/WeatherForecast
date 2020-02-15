@@ -37,7 +37,8 @@ public class CityCoordinatesServiceImpl implements CityCoordinatesService {
      * @throws HttpStatusCodeException when request failed.
      */
     @Cacheable("cityCoordinates")
-    public double[] getCityCoordinates(String city, String countryCode) throws JSONException, IllegalArgumentException, HttpStatusCodeException {
+    public double[] getCityCoordinates(String city, String countryCode) throws JSONException, IllegalArgumentException,
+                                                                                            HttpStatusCodeException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity request = new HttpEntity(headers);
@@ -52,9 +53,18 @@ public class CityCoordinatesServiceImpl implements CityCoordinatesService {
         if (response.getStatusCode() == OK) {
             double[] cord = new double[2];
             JSONObject jsonObject = new JSONObject(response.getBody());
-            cord[0] = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getDouble("lat");
-            cord[1] = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getDouble("lng");
-            String typePlace = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("components").getString("_type");
+            cord[0] = jsonObject.getJSONArray("results")
+                    .getJSONObject(0)
+                    .getJSONObject("geometry")
+                    .getDouble("lat");
+            cord[1] = jsonObject.getJSONArray("results")
+                    .getJSONObject(0)
+                    .getJSONObject("geometry")
+                    .getDouble("lng");
+            String typePlace = jsonObject.getJSONArray("results")
+                    .getJSONObject(0)
+                    .getJSONObject("components")
+                    .getString("_type");
             if (!typePlace.equals("city") &&
                 !typePlace.equals("neighbourhood")) {
                 throw new IllegalArgumentException();

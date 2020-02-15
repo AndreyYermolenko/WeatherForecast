@@ -13,13 +13,13 @@ import java.util.ArrayList;
  */
 @Data
 @XmlRootElement(name = "weatherData")
-public class WeatherDataXml extends WeatherDataFormat {
+public class WeatherDataFormatXml implements WeatherDataFormat {
     private WeatherDataDto[] weatherAPI;
 
-    public WeatherDataXml() {
+    public WeatherDataFormatXml() {
     }
 
-    public WeatherDataXml(ArrayList<WeatherDataDto> weatherDataList) {
+    public WeatherDataFormatXml(ArrayList<WeatherDataDto> weatherDataList) {
         this.weatherAPI = listToArr(weatherDataList);
     }
 

@@ -17,8 +17,8 @@ import ua.sumdu.yermolenko.tools.WeatherDataConverter;
 
 import java.io.IOException;
 
-import static ua.sumdu.yermolenko.services.ServiceConstants.OPENWEATHERMAP_SERVICENAME;
-import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERSTACK_SERVICENAME;
+import static ua.sumdu.yermolenko.constants.ServiceConstants.OPENWEATHERMAP_SERVICENAME;
+import static ua.sumdu.yermolenko.constants.ServiceConstants.WEATHERSTACK_SERVICENAME;
 
 /**
  * Class WeatherStackServiceImpl implements interface WeatherStackService.
@@ -28,8 +28,7 @@ import static ua.sumdu.yermolenko.services.ServiceConstants.WEATHERSTACK_SERVICE
  */
 @Service
 public class WeatherStackServiceImpl implements WeatherStackService {
-    private final static Logger logger = LogManager.getLogger(WeatherStackServiceImpl.class);
-
+    private final static Logger LOGGER = LogManager.getLogger(WeatherStackServiceImpl.class);
     private final WeatherDataDto RESPONSE_FAILED = new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
                     "Response Failed. Server error.");
     private final String PROBLEM_MESSAGE = "OpenWeatherMapService problem";
@@ -60,7 +59,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 weatherDataDto = weatherDataConverter.toJsonTemperatureConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error(PROBLEM_MESSAGE, e);
+                LOGGER.error(PROBLEM_MESSAGE, e);
                 return RESPONSE_FAILED;
             }
 
@@ -89,7 +88,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 weatherDataDto = weatherDataConverter.toJsonCityCoordinatesConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error(PROBLEM_MESSAGE, e);
+                LOGGER.error(PROBLEM_MESSAGE, e);
                 return RESPONSE_FAILED;
             }
 
@@ -119,7 +118,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 weatherDataDto = weatherDataConverter.toJsonPressureConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error(PROBLEM_MESSAGE, e);
+                LOGGER.error(PROBLEM_MESSAGE, e);
                 return RESPONSE_FAILED;
             }
 
@@ -149,7 +148,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 weatherDataDto = weatherDataConverter.toJsonWindSpeedConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error(PROBLEM_MESSAGE, e);
+                LOGGER.error(PROBLEM_MESSAGE, e);
                 return RESPONSE_FAILED;
             }
 
@@ -179,7 +178,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 weatherDataDto = weatherDataConverter.toJsonHumidityConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error(PROBLEM_MESSAGE, e);
+                LOGGER.error(PROBLEM_MESSAGE, e);
                 return RESPONSE_FAILED;
             }
 
@@ -209,7 +208,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 weatherDataDto = weatherDataConverter.toJsonFullWeatherConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error(PROBLEM_MESSAGE, e);
+                LOGGER.error(PROBLEM_MESSAGE, e);
                 return RESPONSE_FAILED;
             }
 
@@ -239,7 +238,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 weatherDataDto = weatherDataConverter.toJsonSunriseTimeConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error(PROBLEM_MESSAGE, e);
+                LOGGER.error(PROBLEM_MESSAGE, e);
                 return RESPONSE_FAILED;
             }
 
@@ -268,7 +267,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 weatherDataDto = weatherDataConverter.toJsonTemperatureFeelsLikeConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error(PROBLEM_MESSAGE, e);
+                LOGGER.error(PROBLEM_MESSAGE, e);
                 return RESPONSE_FAILED;
             }
 
@@ -297,7 +296,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 weatherDataDto = weatherDataConverter.toJsonDirectionWindConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error(PROBLEM_MESSAGE, e);
+                LOGGER.error(PROBLEM_MESSAGE, e);
                 return RESPONSE_FAILED;
             }
 
@@ -326,7 +325,7 @@ public class WeatherStackServiceImpl implements WeatherStackService {
                 weatherDataDto = weatherDataConverter.toJsonWeatherDescriptionConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                logger.error(PROBLEM_MESSAGE, e);
+                LOGGER.error(PROBLEM_MESSAGE, e);
                 return RESPONSE_FAILED;
             }
 

@@ -1,6 +1,8 @@
 ua.sumdu.yermolenko
 ua.sumdu.yermolenko.config
+ua.sumdu.yermolenko.constants
 ua.sumdu.yermolenko.controllers
+ua.sumdu.yermolenko.exceptions
 ua.sumdu.yermolenko.model
 ua.sumdu.yermolenko.model.weatherstack
 ua.sumdu.yermolenko.services

@@ -23,7 +23,7 @@ import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.StringReader;
 
-import static ua.sumdu.yermolenko.services.ServiceConstants.OPENWEATHERMAP_SERVICENAME;
+import static ua.sumdu.yermolenko.constants.ServiceConstants.OPENWEATHERMAP_SERVICENAME;
 
 /**
  * Class OpenWeatherMapServiceImpl implements interface OpenWeatherMapService.
@@ -33,7 +33,7 @@ import static ua.sumdu.yermolenko.services.ServiceConstants.OPENWEATHERMAP_SERVI
  */
 @Service
 public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
-    private final static Logger logger = LogManager.getLogger(OpenWeatherMapServiceImpl.class);
+    private final static Logger LOGGER = LogManager.getLogger(OpenWeatherMapServiceImpl.class);
     private final WeatherDataDto RESPONSE_FAILED = new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
                     "Response Failed. Server error.");
     private final String PROBLEM_MESSAGE = "OpenWeatherMapService problem";
@@ -60,7 +60,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -70,7 +70,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         try {
             temperature = xpath.evaluate("/current/temperature/@value", doc);
         } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -104,7 +104,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -116,7 +116,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
             latitude = xpath.evaluate("/current/city/coord/@lat", doc);
             longitude = xpath.evaluate("/current/city/coord/@lon", doc);
         } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -152,7 +152,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -162,7 +162,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         try {
             pressure = xpath.evaluate("/current/pressure/@value", doc);
         } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -197,7 +197,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -207,7 +207,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         try {
             windSpeed = xpath.evaluate("/current/wind/speed/@value", doc);
         } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -242,7 +242,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -252,7 +252,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         try {
             humidity = xpath.evaluate("/current/humidity/@value", doc);
         } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -287,7 +287,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -303,7 +303,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
             windSpeed = xpath.evaluate("/current/wind/speed/@value", doc);
             humidity = xpath.evaluate("/current/humidity/@value", doc);
         } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -341,7 +341,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -351,7 +351,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         try {
             sunrise = xpath.evaluate("/current/city/sun/@rise", doc);
         } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -385,7 +385,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -395,7 +395,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         try {
             temperatureFeelsLike = xpath.evaluate("/current/feels_like/@value", doc);
         } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -429,7 +429,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
@@ -439,7 +439,7 @@ public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
         try {
             windDir = xpath.evaluate("/current/wind/direction/@name", doc);
         } catch (XPathExpressionException e) {
-            logger.error(PROBLEM_MESSAGE, e);
+            LOGGER.error(PROBLEM_MESSAGE, e);
             return RESPONSE_FAILED;
         }
 
