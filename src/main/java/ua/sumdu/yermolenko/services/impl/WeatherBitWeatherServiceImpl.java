@@ -8,7 +8,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
-import ua.sumdu.yermolenko.services.WeatherBitService;
+import ua.sumdu.yermolenko.services.WeatherForecastService;
 
 import static ua.sumdu.yermolenko.constants.ServiceConstants.WEATHERBIT_SERVICENAME;
 
@@ -19,7 +19,7 @@ import static ua.sumdu.yermolenko.constants.ServiceConstants.WEATHERBIT_SERVICEN
  * Created on 01.02.2020
  */
 @Service
-public class WeatherBitServiceImpl implements WeatherBitService {
+public class WeatherBitServiceImpl implements WeatherForecastService {
     @Value("${weatherbit.api.key}")
     private String apiKey;
     @Value("${weatherbit.url}")

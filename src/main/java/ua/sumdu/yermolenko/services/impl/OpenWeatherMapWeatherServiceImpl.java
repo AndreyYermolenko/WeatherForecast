@@ -12,7 +12,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
-import ua.sumdu.yermolenko.services.OpenWeatherMapService;
+import ua.sumdu.yermolenko.services.WeatherForecastService;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,7 +32,7 @@ import static ua.sumdu.yermolenko.constants.ServiceConstants.OPENWEATHERMAP_SERV
  * Created on 01.02.2020
  */
 @Service
-public class OpenWeatherMapServiceImpl implements OpenWeatherMapService {
+public class OpenWeatherMapServiceImpl implements WeatherForecastService {
     private final static Logger LOGGER = LogManager.getLogger(OpenWeatherMapServiceImpl.class);
     private final WeatherDataDto RESPONSE_FAILED = new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
                     "Response Failed. Server error.");

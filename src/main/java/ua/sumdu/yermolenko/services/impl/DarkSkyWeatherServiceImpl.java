@@ -1,8 +1,6 @@
 package ua.sumdu.yermolenko.services.impl;
 
 import lombok.NonNull;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.CityCoordinatesService;
-import ua.sumdu.yermolenko.services.DarkSkyService;
+import ua.sumdu.yermolenko.services.WeatherForecastService;
 
 import static ua.sumdu.yermolenko.constants.ServiceConstants.DARKSKY_SERVICENAME;
 
@@ -25,7 +23,7 @@ import static ua.sumdu.yermolenko.constants.ServiceConstants.DARKSKY_SERVICENAME
  * Created on 01.02.2020
  */
 @Service
-public class DarkSkyServiceImpl implements DarkSkyService {
+public class WeatherForecastServiceImpl implements WeatherForecastService {
     @Value("${darksky.api.key}")
     private String apiKey;
     @Value("${darksky.url}")

@@ -4,13 +4,13 @@ import lombok.NonNull;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 
 /**
- * Interface WeatherStackService is implemented by the class, which realizes
- * a mechanism for receiving data from WeatherStack API.
+ * Interface DarkSkyService is implemented by the class, which realizes
+ * a mechanism for receiving data from DarkSky API.
  *
  * @author AndreyYermolenko
  * Created on 01.02.2020
  */
-public interface WeatherStackService {
+public interface WeatherForecastService {
     /**
      * Method getTemperature executes an API request to obtain temperature data.
      *
