@@ -10,7 +10,7 @@ import ua.sumdu.yermolenko.model.WeatherDataDto;
  * @author AndreyYermolenko
  * Created on 01.02.2020
  */
-public interface WeatherForecastService {
+public interface WeatherService {
     /**
      * Method getTemperature executes an API request to obtain temperature data.
      *
@@ -100,4 +100,6 @@ public interface WeatherForecastService {
      * @return WeatherDataDto
      */
     WeatherDataDto getWeatherDescription(@NonNull String city, @NonNull String countryCode);
+
+    ServiceName getServiceName();
 }

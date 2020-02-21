@@ -24,11 +24,9 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @EnableCaching
 public class CacheConfig extends CachingConfigurerSupport {
-    @Value("${cache.lifetime}")
-    int lifeTime;
 
     @Bean
-    public CacheManager cacheManager() {
+    public CacheManager cacheManager(@Value("${cache.lifetime}") int lifeTime) {
         return new ConcurrentMapCacheManager() {
             @Override
             protected Cache createConcurrentMapCache(final String name) {

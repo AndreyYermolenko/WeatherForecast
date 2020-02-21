@@ -12,7 +12,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
-import ua.sumdu.yermolenko.services.WeatherForecastService;
+import ua.sumdu.yermolenko.services.ServiceName;
+import ua.sumdu.yermolenko.services.WeatherService;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,8 +33,8 @@ import static ua.sumdu.yermolenko.constants.ServiceConstants.OPENWEATHERMAP_SERV
  * Created on 01.02.2020
  */
 @Service
-public class OpenWeatherMapServiceImpl implements WeatherForecastService {
-    private final static Logger LOGGER = LogManager.getLogger(OpenWeatherMapServiceImpl.class);
+public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
+    private final static Logger LOGGER = LogManager.getLogger(OpenWeatherMapWeatherServiceImpl.class);
     private final WeatherDataDto RESPONSE_FAILED = new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
                     "Response Failed. Server error.");
     private final String PROBLEM_MESSAGE = "OpenWeatherMapService problem";
@@ -479,6 +480,11 @@ public class OpenWeatherMapServiceImpl implements WeatherForecastService {
         } else {
             return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
         }
+    }
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.OPEN_WEATHER_MAP;
     }
 
     private ResponseEntity<String> getWeather(@NonNull String city, @NonNull String countryCode) {

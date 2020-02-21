@@ -1,6 +1,6 @@
 package ua.sumdu.yermolenko.services;
 
-public enum ServiceNames {
+public enum ServiceName {
     DARK_SKY,
     OPEN_WEATHER_MAP,
     WEATHER_BIT,

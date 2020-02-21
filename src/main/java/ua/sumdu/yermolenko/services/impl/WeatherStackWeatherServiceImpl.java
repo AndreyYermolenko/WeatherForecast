@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.model.weatherstack.WeatherStackData;
-import ua.sumdu.yermolenko.services.WeatherForecastService;
+import ua.sumdu.yermolenko.services.ServiceName;
+import ua.sumdu.yermolenko.services.WeatherService;
 import ua.sumdu.yermolenko.tools.WeatherDataConverter;
 
 import java.io.IOException;
@@ -27,8 +28,8 @@ import static ua.sumdu.yermolenko.constants.ServiceConstants.WEATHERSTACK_SERVIC
  * Created on 01.02.2020
  */
 @Service
-public class WeatherStackServiceImpl implements WeatherForecastService {
-    private final static Logger LOGGER = LogManager.getLogger(WeatherStackServiceImpl.class);
+public class WeatherStackWeatherServiceImpl implements WeatherService {
+    private final static Logger LOGGER = LogManager.getLogger(WeatherStackWeatherServiceImpl.class);
     private final WeatherDataDto RESPONSE_FAILED = new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
                     "Response Failed. Server error.");
     private final String PROBLEM_MESSAGE = "OpenWeatherMapService problem";
@@ -333,6 +334,11 @@ public class WeatherStackServiceImpl implements WeatherForecastService {
         } else {
             return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
         }
+    }
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.WEATHER_STACK;
     }
 
 
