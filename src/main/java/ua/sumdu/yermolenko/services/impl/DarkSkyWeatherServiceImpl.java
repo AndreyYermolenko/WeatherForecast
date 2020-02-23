@@ -3,19 +3,17 @@ package ua.sumdu.yermolenko.services.impl;
 import lombok.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import ua.sumdu.yermolenko.constants.ServiceConstants;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.CityCoordinatesService;
 import ua.sumdu.yermolenko.services.ServiceName;
 import ua.sumdu.yermolenko.services.WeatherService;
-
-import static ua.sumdu.yermolenko.constants.ServiceConstants.DARKSKY_SERVICENAME;
 
 /**
  * Class DarkSkyServiceImpl implements interface DarkSkyService.
@@ -29,8 +27,13 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
     private String apiKey;
     @Value("${darksky.url}")
     private String url;
-    @Autowired
-    private CityCoordinatesService cityCoordinatesService;
+    private final CityCoordinatesService cityCoordinatesService;
+    private final ServiceConstants constants;
+
+    public DarkSkyWeatherServiceImpl(CityCoordinatesService cityCoordinatesService, ServiceConstants constants) {
+        this.cityCoordinatesService = cityCoordinatesService;
+        this.constants = constants;
+    }
 
     /**
      * Method getTemperature executes an API request to obtain temperature data.
@@ -49,14 +52,14 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
                     .getDouble("temperature"));
 
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setServiceName(getServiceName());
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.DARK_SKY, response.getBody());
         }
     }
 
@@ -78,7 +81,7 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
                     .getDouble("longitude"));
 
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.DARK_SKY);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setLatitude(latitude);
@@ -86,7 +89,7 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.DARK_SKY, response.getBody());
         }
     }
 
@@ -108,14 +111,14 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
                     .getDouble("pressure"));
 
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.DARK_SKY);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setPressure(pressure);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.DARK_SKY, response.getBody());
         }
     }
 
@@ -137,14 +140,14 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
                     .getDouble("windSpeed"));
 
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.DARK_SKY);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setWindSpeed(windSpeed);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.DARK_SKY, response.getBody());
         }
     }
 
@@ -166,14 +169,14 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
                     .getDouble("humidity")*100);
 
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.DARK_SKY);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setHumidity(humidity);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.DARK_SKY, response.getBody());
         }
     }
 
@@ -204,7 +207,7 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
                     .getDouble("humidity")*100);
 
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.DARK_SKY);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
@@ -214,7 +217,7 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.DARK_SKY, response.getBody());
         }
     }
 
@@ -232,13 +235,13 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
         if (response.getStatusCode() == HttpStatus.OK) {
             String sunrise = "Api does not support this field.";
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.DARK_SKY);
             weatherDataDto.setName(city);
             weatherDataDto.setSunrise(sunrise);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.DARK_SKY, response.getBody());
         }
     }
 
@@ -259,14 +262,14 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
                     .getDouble("apparentTemperature"));
 
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.DARK_SKY);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperatureFeelsLike(temperatureFeelsLike);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.DARK_SKY, response.getBody());
         }
     }
 
@@ -281,17 +284,15 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
     public WeatherDataDto getDirectionWind(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
-            String windDir = "Api does not support this field.";
-
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.DARK_SKY);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
-            weatherDataDto.setDirectionWind(windDir);
+            weatherDataDto.setDirectionWind(constants.getMessageDoesNotSupportField());
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.DARK_SKY, response.getBody());
         }
     }
 
@@ -306,19 +307,23 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
     public WeatherDataDto getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
-            String weatherDesc = "Api does not support this field.";
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            weatherDataDto.setServiceName(DARKSKY_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.DARK_SKY);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setName(city);
-            weatherDataDto.setWeatherDescription(weatherDesc);
+            weatherDataDto.setWeatherDescription(constants.getMessageDoesNotSupportField());
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(DARKSKY_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.DARK_SKY, response.getBody());
         }
     }
 
+    /**
+     * Method getServiceName returns the serviceName of this DarkSkyWeatherServiceImpl object.
+     *
+     * @return the serviceName (type ServiceName) of this DarkSkyWeatherServiceImpl object.
+     */
     @Override
     public ServiceName getServiceName() {
         return ServiceName.DARK_SKY;
@@ -335,9 +340,9 @@ public class DarkSkyWeatherServiceImpl implements WeatherService {
         try {
             cord = cityCoordinatesService.getCityCoordinates(city, countryCode);
         } catch (JSONException | IllegalArgumentException e) {
-            return new ResponseEntity<String>("City not found", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("City " + city + " (" + countryCode +  ") not found", HttpStatus.BAD_REQUEST);
         } catch (HttpServerErrorException e) {
-            return new ResponseEntity<String>("City Coordinates Server Exception: " + e.toString(),
+            return new ResponseEntity<String>("City " + city + " (" + countryCode +  ") Coordinates Server Exception: " + e.toString(),
                     HttpStatus.BAD_REQUEST);
         }
 

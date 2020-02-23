@@ -101,5 +101,10 @@ public interface WeatherService {
      */
     WeatherDataDto getWeatherDescription(@NonNull String city, @NonNull String countryCode);
 
+    /**
+     * Method getServiceName returns the serviceName of this WeatherService object.
+     *
+     * @return the serviceName (type ServiceName) of this WeatherService object.
+     */
     ServiceName getServiceName();
 }

@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import ua.sumdu.yermolenko.constants.ServiceConstants;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.ServiceName;
 import ua.sumdu.yermolenko.services.WeatherService;
@@ -24,8 +25,6 @@ import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.StringReader;
 
-import static ua.sumdu.yermolenko.constants.ServiceConstants.OPENWEATHERMAP_SERVICENAME;
-
 /**
  * Class OpenWeatherMapServiceImpl implements interface OpenWeatherMapService.
  *
@@ -35,14 +34,18 @@ import static ua.sumdu.yermolenko.constants.ServiceConstants.OPENWEATHERMAP_SERV
 @Service
 public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
     private final static Logger LOGGER = LogManager.getLogger(OpenWeatherMapWeatherServiceImpl.class);
-    private final WeatherDataDto RESPONSE_FAILED = new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
+    private final WeatherDataDto RESPONSE_FAILED = new WeatherDataDto(ServiceName.OPEN_WEATHER_MAP,
                     "Response Failed. Server error.");
-    private final String PROBLEM_MESSAGE = "OpenWeatherMapService problem";
+    private final ServiceConstants constants;
 
     @Value("${openweathermap.api.key}")
     private String apiKey;
     @Value("${openweathermap.url}")
     private String url;
+
+    public OpenWeatherMapWeatherServiceImpl(ServiceConstants constants) {
+        this.constants = constants;
+    }
 
     /**
      * Method getTemperature executes an API request to obtain temperature data.
@@ -61,7 +64,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
@@ -71,12 +74,12 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         try {
             temperature = xpath.evaluate("/current/temperature/@value", doc);
         } catch (XPathExpressionException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
         WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setServiceName(ServiceName.OPEN_WEATHER_MAP);
         weatherDataDto.setName(city);
         weatherDataDto.setCountry(countryCode);
         weatherDataDto.setTemperature(temperature);
@@ -84,7 +87,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         if (response.getStatusCode() == HttpStatus.OK) {
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.OPEN_WEATHER_MAP, response.getBody());
         }
     }
 
@@ -105,7 +108,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
@@ -117,12 +120,12 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
             latitude = xpath.evaluate("/current/city/coord/@lat", doc);
             longitude = xpath.evaluate("/current/city/coord/@lon", doc);
         } catch (XPathExpressionException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
         WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setServiceName(ServiceName.OPEN_WEATHER_MAP);
         weatherDataDto.setName(city);
         weatherDataDto.setCountry(countryCode);
         weatherDataDto.setLatitude(latitude);
@@ -131,7 +134,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         if (response.getStatusCode() == HttpStatus.OK) {
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.OPEN_WEATHER_MAP, response.getBody());
         }
     }
 
@@ -153,7 +156,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
@@ -163,12 +166,12 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         try {
             pressure = xpath.evaluate("/current/pressure/@value", doc);
         } catch (XPathExpressionException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
         WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setServiceName(ServiceName.OPEN_WEATHER_MAP);
         weatherDataDto.setName(city);
         weatherDataDto.setCountry(countryCode);
         weatherDataDto.setPressure(pressure);
@@ -176,7 +179,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         if (response.getStatusCode() == HttpStatus.OK) {
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.OPEN_WEATHER_MAP, response.getBody());
         }
     }
 
@@ -198,7 +201,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
@@ -208,12 +211,12 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         try {
             windSpeed = xpath.evaluate("/current/wind/speed/@value", doc);
         } catch (XPathExpressionException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
         WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setServiceName(ServiceName.OPEN_WEATHER_MAP);
         weatherDataDto.setName(city);
         weatherDataDto.setCountry(countryCode);
         weatherDataDto.setWindSpeed(windSpeed);
@@ -221,7 +224,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         if (response.getStatusCode() == HttpStatus.OK) {
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.OPEN_WEATHER_MAP, response.getBody());
         }
     }
 
@@ -243,7 +246,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
@@ -253,12 +256,12 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         try {
             humidity = xpath.evaluate("/current/humidity/@value", doc);
         } catch (XPathExpressionException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
         WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setServiceName(ServiceName.OPEN_WEATHER_MAP);
         weatherDataDto.setName(city);
         weatherDataDto.setCountry(countryCode);
         weatherDataDto.setHumidity(humidity);
@@ -266,7 +269,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         if (response.getStatusCode() == HttpStatus.OK) {
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.OPEN_WEATHER_MAP, response.getBody());
         }
     }
 
@@ -288,7 +291,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
@@ -304,12 +307,12 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
             windSpeed = xpath.evaluate("/current/wind/speed/@value", doc);
             humidity = xpath.evaluate("/current/humidity/@value", doc);
         } catch (XPathExpressionException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
         WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setServiceName(ServiceName.OPEN_WEATHER_MAP);
         weatherDataDto.setName(city);
         weatherDataDto.setCountry(countryCode);
         weatherDataDto.setTemperature(temperature);
@@ -320,7 +323,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         if (response.getStatusCode() == HttpStatus.OK) {
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.OPEN_WEATHER_MAP, response.getBody());
         }
     }
 
@@ -342,7 +345,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
@@ -352,12 +355,12 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         try {
             sunrise = xpath.evaluate("/current/city/sun/@rise", doc);
         } catch (XPathExpressionException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
         WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setServiceName(ServiceName.OPEN_WEATHER_MAP);
         weatherDataDto.setName(city);
         weatherDataDto.setCountry(countryCode);
         weatherDataDto.setSunrise(sunrise);
@@ -365,7 +368,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         if (response.getStatusCode() == HttpStatus.OK) {
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.OPEN_WEATHER_MAP, response.getBody());
         }
     }
 
@@ -386,7 +389,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
@@ -396,12 +399,12 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         try {
             temperatureFeelsLike = xpath.evaluate("/current/feels_like/@value", doc);
         } catch (XPathExpressionException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
         WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setServiceName(ServiceName.OPEN_WEATHER_MAP);
         weatherDataDto.setName(city);
         weatherDataDto.setCountry(countryCode);
         weatherDataDto.setTemperatureFeelsLike(temperatureFeelsLike);
@@ -409,7 +412,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         if (response.getStatusCode() == HttpStatus.OK) {
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.OPEN_WEATHER_MAP, response.getBody());
         }
     }
 
@@ -430,7 +433,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(response.getBody())));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
@@ -440,12 +443,12 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         try {
             windDir = xpath.evaluate("/current/wind/direction/@name", doc);
         } catch (XPathExpressionException e) {
-            LOGGER.error(PROBLEM_MESSAGE, e);
+            LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
             return RESPONSE_FAILED;
         }
 
         WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setServiceName(ServiceName.OPEN_WEATHER_MAP);
         weatherDataDto.setName(city);
         weatherDataDto.setCountry(countryCode);
         weatherDataDto.setDirectionWind(windDir);
@@ -453,7 +456,7 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
         if (response.getStatusCode() == HttpStatus.OK) {
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.OPEN_WEATHER_MAP, response.getBody());
         }
     }
 
@@ -467,21 +470,25 @@ public class OpenWeatherMapWeatherServiceImpl implements WeatherService {
     @Cacheable("openWeatherMapWeatherDescription")
     public WeatherDataDto getWeatherDescription(@NonNull String city, @NonNull String countryCode) {
         ResponseEntity<String> response = getWeather(city, countryCode);
-        String weatherDescription = "Api does not support this field.";
 
         WeatherDataDto weatherDataDto = new WeatherDataDto();
-        weatherDataDto.setServiceName(OPENWEATHERMAP_SERVICENAME);
+        weatherDataDto.setServiceName(ServiceName.OPEN_WEATHER_MAP);
         weatherDataDto.setName(city);
         weatherDataDto.setCountry(countryCode);
-        weatherDataDto.setWeatherDescription(weatherDescription);
+        weatherDataDto.setWeatherDescription(constants.getMessageDoesNotSupportField());
 
         if (response.getStatusCode() == HttpStatus.OK) {
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(OPENWEATHERMAP_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.OPEN_WEATHER_MAP, response.getBody());
         }
     }
 
+    /**
+     * Method getServiceName returns the serviceName of this WeatherService object.
+     *
+     * @return the serviceName (type ServiceName) of this WeatherService object.
+     */
     @Override
     public ServiceName getServiceName() {
         return ServiceName.OPEN_WEATHER_MAP;

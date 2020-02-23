@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
@@ -18,9 +17,6 @@ import ua.sumdu.yermolenko.tools.WeatherDataConverter;
 
 import java.io.IOException;
 
-import static ua.sumdu.yermolenko.constants.ServiceConstants.OPENWEATHERMAP_SERVICENAME;
-import static ua.sumdu.yermolenko.constants.ServiceConstants.WEATHERSTACK_SERVICENAME;
-
 /**
  * Class WeatherStackServiceImpl implements interface WeatherStackService.
  *
@@ -30,16 +26,18 @@ import static ua.sumdu.yermolenko.constants.ServiceConstants.WEATHERSTACK_SERVIC
 @Service
 public class WeatherStackWeatherServiceImpl implements WeatherService {
     private final static Logger LOGGER = LogManager.getLogger(WeatherStackWeatherServiceImpl.class);
-    private final WeatherDataDto RESPONSE_FAILED = new WeatherDataDto(OPENWEATHERMAP_SERVICENAME,
+    private final WeatherDataDto RESPONSE_FAILED = new WeatherDataDto(ServiceName.WEATHER_STACK,
                     "Response Failed. Server error.");
-    private final String PROBLEM_MESSAGE = "OpenWeatherMapService problem";
 
     @Value("${weatherstack.api.key}")
     private String apiKey;
     @Value("${weatherstack.url}")
     private String url;
-    @Autowired
-    private WeatherDataConverter weatherDataConverter;
+    private final WeatherDataConverter weatherDataConverter;
+
+    public WeatherStackWeatherServiceImpl(WeatherDataConverter weatherDataConverter) {
+        this.weatherDataConverter = weatherDataConverter;
+    }
 
     /**
      * Method getTemperature executes an API request to obtain temperature data.
@@ -57,16 +55,16 @@ public class WeatherStackWeatherServiceImpl implements WeatherService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonTemperatureConvert(weatherData);
+                weatherDataDto = weatherDataConverter.toDTOTemperatureConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                LOGGER.error(PROBLEM_MESSAGE, e);
+                LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
                 return RESPONSE_FAILED;
             }
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_STACK, response.getBody());
         }
     }
 
@@ -86,16 +84,16 @@ public class WeatherStackWeatherServiceImpl implements WeatherService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonCityCoordinatesConvert(weatherData);
+                weatherDataDto = weatherDataConverter.toDTOCityCoordinatesConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                LOGGER.error(PROBLEM_MESSAGE, e);
+                LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
                 return RESPONSE_FAILED;
             }
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_STACK, response.getBody());
         }
     }
 
@@ -116,16 +114,16 @@ public class WeatherStackWeatherServiceImpl implements WeatherService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonPressureConvert(weatherData);
+                weatherDataDto = weatherDataConverter.toDTOPressureConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                LOGGER.error(PROBLEM_MESSAGE, e);
+                LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
                 return RESPONSE_FAILED;
             }
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_STACK, response.getBody());
         }
     }
 
@@ -146,16 +144,16 @@ public class WeatherStackWeatherServiceImpl implements WeatherService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonWindSpeedConvert(weatherData);
+                weatherDataDto = weatherDataConverter.toDTOWindSpeedConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                LOGGER.error(PROBLEM_MESSAGE, e);
+                LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
                 return RESPONSE_FAILED;
             }
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_STACK, response.getBody());
         }
     }
 
@@ -176,16 +174,16 @@ public class WeatherStackWeatherServiceImpl implements WeatherService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonHumidityConvert(weatherData);
+                weatherDataDto = weatherDataConverter.toDTOHumidityConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                LOGGER.error(PROBLEM_MESSAGE, e);
+                LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
                 return RESPONSE_FAILED;
             }
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_STACK, response.getBody());
         }
     }
 
@@ -206,16 +204,16 @@ public class WeatherStackWeatherServiceImpl implements WeatherService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonFullWeatherConvert(weatherData);
+                weatherDataDto = weatherDataConverter.toDTOFullWeatherConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                LOGGER.error(PROBLEM_MESSAGE, e);
+                LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
                 return RESPONSE_FAILED;
             }
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_STACK, response.getBody());
         }
     }
 
@@ -236,16 +234,16 @@ public class WeatherStackWeatherServiceImpl implements WeatherService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonSunriseTimeConvert(weatherData);
+                weatherDataDto = weatherDataConverter.toDTOSunriseTimeConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                LOGGER.error(PROBLEM_MESSAGE, e);
+                LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
                 return RESPONSE_FAILED;
             }
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_STACK, response.getBody());
         }
     }
 
@@ -268,13 +266,13 @@ public class WeatherStackWeatherServiceImpl implements WeatherService {
                 weatherDataDto = weatherDataConverter.toJsonTemperatureFeelsLikeConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                LOGGER.error(PROBLEM_MESSAGE, e);
+                LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
                 return RESPONSE_FAILED;
             }
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_STACK, response.getBody());
         }
     }
 
@@ -297,13 +295,13 @@ public class WeatherStackWeatherServiceImpl implements WeatherService {
                 weatherDataDto = weatherDataConverter.toJsonDirectionWindConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                LOGGER.error(PROBLEM_MESSAGE, e);
+                LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
                 return RESPONSE_FAILED;
             }
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_STACK, response.getBody());
         }
     }
 
@@ -323,19 +321,24 @@ public class WeatherStackWeatherServiceImpl implements WeatherService {
             WeatherDataDto weatherDataDto;
             try {
                 weatherData = objectMapper.readValue(response.getBody(), WeatherStackData.class);
-                weatherDataDto = weatherDataConverter.toJsonWeatherDescriptionConvert(weatherData);
+                weatherDataDto = weatherDataConverter.toDTOWeatherDescriptionConvert(weatherData);
                 weatherDataDto.setCountry(countryCode);
             } catch (IOException e) {
-                LOGGER.error(PROBLEM_MESSAGE, e);
+                LOGGER.error("Input parameters: " + city + ", " + countryCode + ".", e);
                 return RESPONSE_FAILED;
             }
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERSTACK_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_STACK, response.getBody());
         }
     }
 
+    /**
+     * Method getServiceName returns the serviceName of this WeatherService object.
+     *
+     * @return the serviceName (type ServiceName) of this WeatherService object.
+     */
     @Override
     public ServiceName getServiceName() {
         return ServiceName.WEATHER_STACK;

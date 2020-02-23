@@ -3,8 +3,7 @@ package ua.sumdu.yermolenko.tools;
 import org.springframework.stereotype.Component;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.model.weatherstack.WeatherStackData;
-
-import static ua.sumdu.yermolenko.constants.ServiceConstants.WEATHERSTACK_SERVICENAME;
+import ua.sumdu.yermolenko.services.ServiceName;
 
 /**
  * Class WeatherDataConverter is used for parsing weather API data.
@@ -21,10 +20,10 @@ public class WeatherDataConverter {
      * @param inputData of type WeatherStackData
      * @return WeatherDataDto
      */
-    public WeatherDataDto toJsonTemperatureConvert(WeatherStackData inputData) {
+    public WeatherDataDto toDTOTemperatureConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
 
-        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setServiceName(ServiceName.WEATHER_STACK);
         outputData.setName(inputData.getLocation().getName());
         outputData.setCountry(inputData.getLocation().getCountry());
         outputData.setTemperature(inputData.getCurrent().getTemperature());
@@ -39,10 +38,10 @@ public class WeatherDataConverter {
      * @param inputData of type WeatherStackData
      * @return WeatherDataDto
      */
-    public WeatherDataDto toJsonCityCoordinatesConvert(WeatherStackData inputData) {
+    public WeatherDataDto toDTOCityCoordinatesConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
 
-        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setServiceName(ServiceName.WEATHER_STACK);
         outputData.setName(inputData.getLocation().getName());
         outputData.setCountry(inputData.getLocation().getCountry());
         outputData.setLatitude(inputData.getLocation().getLat());
@@ -57,10 +56,10 @@ public class WeatherDataConverter {
      * @param inputData of type WeatherStackData
      * @return WeatherDataDto
      */
-    public WeatherDataDto toJsonPressureConvert(WeatherStackData inputData) {
+    public WeatherDataDto toDTOPressureConvert(WeatherStackData inputData) {
             WeatherDataDto outputData = new WeatherDataDto();
 
-            outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+            outputData.setServiceName(ServiceName.WEATHER_STACK);
             outputData.setName(inputData.getLocation().getName());
             outputData.setCountry(inputData.getLocation().getCountry());
             outputData.setPressure(inputData.getCurrent().getPressure());
@@ -74,11 +73,11 @@ public class WeatherDataConverter {
      * @param inputData of type WeatherStackData
      * @return WeatherDataDto
      */
-    public WeatherDataDto toJsonWindSpeedConvert(WeatherStackData inputData) {
+    public WeatherDataDto toDTOWindSpeedConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
         double windSpeedMetersPerSecond = Double.parseDouble(inputData.getCurrent().getWindSpeed()) / 3.6;
 
-        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setServiceName(ServiceName.WEATHER_STACK);
         outputData.setName(inputData.getLocation().getName());
         outputData.setCountry(inputData.getLocation().getCountry());
         outputData.setWindSpeed(String.valueOf(windSpeedMetersPerSecond));
@@ -92,10 +91,10 @@ public class WeatherDataConverter {
      * @param inputData of type WeatherStackData
      * @return WeatherDataDto
      */
-    public WeatherDataDto toJsonHumidityConvert(WeatherStackData inputData) {
+    public WeatherDataDto toDTOHumidityConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
 
-        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setServiceName(ServiceName.WEATHER_STACK);
         outputData.setName(inputData.getLocation().getName());
         outputData.setCountry(inputData.getLocation().getCountry());
         outputData.setHumidity(inputData.getCurrent().getHumidity());
@@ -109,11 +108,11 @@ public class WeatherDataConverter {
      * @param inputData of type WeatherStackData
      * @return WeatherDataDto
      */
-    public WeatherDataDto toJsonFullWeatherConvert(WeatherStackData inputData) {
+    public WeatherDataDto toDTOFullWeatherConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
         double windSpeedMetersPerSecond = Double.parseDouble(inputData.getCurrent().getWindSpeed()) / 3.6;
 
-        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setServiceName(ServiceName.WEATHER_STACK);
         outputData.setName(inputData.getLocation().getName());
         outputData.setCountry(inputData.getLocation().getCountry());
         outputData.setTemperature(inputData.getCurrent().getTemperature());
@@ -130,10 +129,10 @@ public class WeatherDataConverter {
      * @param inputData of type WeatherStackData
      * @return WeatherDataDto
      */
-    public WeatherDataDto toJsonSunriseTimeConvert(WeatherStackData inputData) {
+    public WeatherDataDto toDTOSunriseTimeConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
 
-        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setServiceName(ServiceName.WEATHER_STACK);
         outputData.setName(inputData.getLocation().getName());
         outputData.setCountry(inputData.getLocation().getCountry());
         outputData.setSunrise(inputData.getCurrent().getObservationTime());
@@ -150,7 +149,7 @@ public class WeatherDataConverter {
     public WeatherDataDto toJsonTemperatureFeelsLikeConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
 
-        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setServiceName(ServiceName.WEATHER_STACK);
         outputData.setName(inputData.getLocation().getName());
         outputData.setCountry(inputData.getLocation().getCountry());
         outputData.setTemperatureFeelsLike(inputData.getCurrent().getFeelslike());
@@ -167,7 +166,7 @@ public class WeatherDataConverter {
     public WeatherDataDto toJsonDirectionWindConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
 
-        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setServiceName(ServiceName.WEATHER_STACK);
         outputData.setName(inputData.getLocation().getName());
         outputData.setCountry(inputData.getLocation().getCountry());
         outputData.setDirectionWind(inputData.getCurrent().getWindDir());
@@ -181,10 +180,10 @@ public class WeatherDataConverter {
      * @param inputData of type WeatherStackData
      * @return WeatherDataDto
      */
-    public WeatherDataDto toJsonWeatherDescriptionConvert(WeatherStackData inputData) {
+    public WeatherDataDto toDTOWeatherDescriptionConvert(WeatherStackData inputData) {
         WeatherDataDto outputData = new WeatherDataDto();
 
-        outputData.setServiceName(WEATHERSTACK_SERVICENAME);
+        outputData.setServiceName(ServiceName.WEATHER_STACK);
         outputData.setName(inputData.getLocation().getName());
         outputData.setCountry(inputData.getLocation().getCountry());
         outputData.setWeatherDescription(inputData.getCurrent().getWeatherDescriptions()[0]);

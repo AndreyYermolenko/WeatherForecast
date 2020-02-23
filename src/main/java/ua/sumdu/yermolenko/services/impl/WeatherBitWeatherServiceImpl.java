@@ -7,11 +7,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import ua.sumdu.yermolenko.constants.ServiceConstants;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.ServiceName;
 import ua.sumdu.yermolenko.services.WeatherService;
-
-import static ua.sumdu.yermolenko.constants.ServiceConstants.WEATHERBIT_SERVICENAME;
 
 /**
  * Class WeatherBitServiceImpl implements interface WeatherBitService.
@@ -25,6 +24,11 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
     private String apiKey;
     @Value("${weatherbit.url}")
     private String url;
+    private final ServiceConstants constants;
+
+    public WeatherBitWeatherServiceImpl(ServiceConstants constants) {
+        this.constants = constants;
+    }
 
     /**
      * Method getTemperature executes an API request to obtain temperature data.
@@ -43,14 +47,14 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
                     .getJSONObject(0)
                     .getDouble("temp"));
 
-            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.WEATHER_BIT);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_BIT, response.getBody());
         }
     }
 
@@ -74,7 +78,7 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
                     .getJSONObject(0)
                     .getDouble("lon"));
 
-            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.WEATHER_BIT);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setLatitude(latitude);
@@ -82,7 +86,7 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_BIT, response.getBody());
         }
     }
 
@@ -104,14 +108,14 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
                     .getJSONObject(0)
                     .getDouble("pres"));
 
-            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.WEATHER_BIT);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setPressure(pressure);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_BIT, response.getBody());
         }
     }
 
@@ -133,14 +137,14 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
                     .getJSONObject(0)
                     .getDouble("wind_spd"));
 
-            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.WEATHER_BIT);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setWindSpeed(windSpeed);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_BIT, response.getBody());
         }
     }
 
@@ -157,16 +161,15 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
         ResponseEntity<String> response = getWeather(city, countryCode);
         if (response.getStatusCode() == HttpStatus.OK) {
             WeatherDataDto weatherDataDto = new WeatherDataDto();
-            String humidity = "Api does not support this field.";
 
-            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.WEATHER_BIT);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
-            weatherDataDto.setHumidity(humidity);
+            weatherDataDto.setHumidity(constants.getMessageDoesNotSupportField());
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_BIT, response.getBody());
         }
     }
 
@@ -193,19 +196,18 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
             String windSpeed = String.valueOf(jsonObject.getJSONArray("data")
                     .getJSONObject(0)
                     .getDouble("wind_spd"));
-            String humidity = "Api does not support this field.";
 
-            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.WEATHER_BIT);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setTemperature(temperature);
             weatherDataDto.setPressure(pressure);
             weatherDataDto.setWindSpeed(windSpeed);
-            weatherDataDto.setHumidity(humidity);
+            weatherDataDto.setHumidity(constants.getMessageDoesNotSupportField());
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_BIT, response.getBody());
         }
     }
 
@@ -227,14 +229,14 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
                     .getJSONObject(0)
                     .getString("sunrise"));
 
-            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.WEATHER_BIT);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setSunrise(sunrise);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_BIT, response.getBody());
         }
     }
 
@@ -255,14 +257,14 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
                     .getJSONObject(0)
                     .getDouble("app_temp"));
 
-            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.WEATHER_BIT);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setSunrise(temperatureFeelsLike);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_BIT, response.getBody());
         }
     }
 
@@ -283,14 +285,14 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
                     .getJSONObject(0)
                     .getString("wind_cdir_full"));
 
-            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.WEATHER_BIT);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setDirectionWind(windDir);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_BIT, response.getBody());
         }
     }
 
@@ -312,17 +314,22 @@ public class WeatherBitWeatherServiceImpl implements WeatherService {
                     .getJSONObject("weather")
                     .getString("description"));
 
-            weatherDataDto.setServiceName(WEATHERBIT_SERVICENAME);
+            weatherDataDto.setServiceName(ServiceName.WEATHER_BIT);
             weatherDataDto.setName(city);
             weatherDataDto.setCountry(countryCode);
             weatherDataDto.setWeatherDescription(weatherDescription);
 
             return weatherDataDto;
         } else {
-            return new WeatherDataDto(WEATHERBIT_SERVICENAME, response.getBody());
+            return new WeatherDataDto(ServiceName.WEATHER_BIT, response.getBody());
         }
     }
 
+    /**
+     * Method getServiceName returns the serviceName of this WeatherService object.
+     *
+     * @return the serviceName (type ServiceName) of this WeatherService object.
+     */
     @Override
     public ServiceName getServiceName() {
         return ServiceName.WEATHER_BIT;

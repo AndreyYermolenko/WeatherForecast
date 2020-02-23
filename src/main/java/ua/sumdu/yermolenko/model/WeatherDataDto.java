@@ -2,8 +2,7 @@ package ua.sumdu.yermolenko.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-
-import javax.xml.bind.annotation.XmlType;
+import ua.sumdu.yermolenko.services.ServiceName;
 
 /**
  * Class WeatherDataDto stores weather data.
@@ -13,9 +12,6 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@XmlType(propOrder = { "serviceName", "name", "country", "temperature", "latitude",
-        "longitude", "pressure", "windSpeed", "humidity", "sunrise", "temperatureFeelsLike",
-        "directionWind", "weatherDescription", "exceptionMessage" })
 public class WeatherDataDto {
     private String serviceName;
     private String name;
@@ -35,8 +31,12 @@ public class WeatherDataDto {
     public WeatherDataDto() {
     }
 
-    public WeatherDataDto(String serviceName, String exceptionMessage) {
-        this.serviceName = serviceName;
+    public WeatherDataDto(ServiceName serviceName, String exceptionMessage) {
+        this.serviceName = serviceName.toString();
         this.exceptionMessage = exceptionMessage;
+    }
+
+    public void setServiceName(ServiceName serviceName) {
+        this.serviceName = serviceName.toString();
     }
 }
