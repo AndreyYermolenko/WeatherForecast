@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ua.sumdu.yermolenko.exceptions.WeatherForecastException;
+import ua.sumdu.yermolenko.model.HomePage;
 import ua.sumdu.yermolenko.model.WeatherDataDto;
 import ua.sumdu.yermolenko.services.WeatherAggregationDataService;
 
@@ -45,11 +46,11 @@ public class MainController {
     public ResponseEntity<?> temperatureAggregation(@PathVariable String countryCode,
                                                                    @PathVariable String city) {
         try {
-            ArrayList<WeatherDataDto> weatherDataJson = weatherAggregationDataService
+            ArrayList<WeatherDataDto> weatherData = weatherAggregationDataService
                     .temperatureAggregation(city, countryCode);
-            return new ResponseEntity<>(weatherDataJson, HttpStatus.OK);
+            return new ResponseEntity<>(weatherData, HttpStatus.OK);
         } catch (WeatherForecastException e) {
-            LOGGER.error(e);
+            LOGGER.error("Parameters request: " + city + ", " + countryCode, e);
             return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
         }
     }
@@ -68,11 +69,11 @@ public class MainController {
     public ResponseEntity<?> cityCoordinatesAggregation(@PathVariable String countryCode,
                                                                      @PathVariable String city) {
         try {
-            ArrayList<WeatherDataDto> weatherDataJson = weatherAggregationDataService
+            ArrayList<WeatherDataDto> weatherData = weatherAggregationDataService
                     .cityCoordinatesAggregation(city, countryCode);
-            return new ResponseEntity<>(weatherDataJson, HttpStatus.OK);
+            return new ResponseEntity<>(weatherData, HttpStatus.OK);
         } catch (WeatherForecastException e) {
-            LOGGER.error(e);
+            LOGGER.error("Parameters request: " + city + ", " + countryCode, e);
             return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
         }
     }
@@ -91,11 +92,11 @@ public class MainController {
     public ResponseEntity<?> pressureAggregation(@PathVariable String countryCode,
                                                               @PathVariable String city) {
         try {
-            ArrayList<WeatherDataDto> weatherDataJson = weatherAggregationDataService
+            ArrayList<WeatherDataDto> weatherData = weatherAggregationDataService
                     .pressureAggregation(city, countryCode);
-            return new ResponseEntity<>(weatherDataJson, HttpStatus.OK);
+            return new ResponseEntity<>(weatherData, HttpStatus.OK);
         } catch (WeatherForecastException e) {
-            LOGGER.error(e);
+            LOGGER.error("Parameters request: " + city + ", " + countryCode, e);
             return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
         }
     }
@@ -114,11 +115,11 @@ public class MainController {
     public ResponseEntity<?> windSpeedAggregation(@PathVariable String countryCode,
                                                                @PathVariable String city) {
         try {
-            ArrayList<WeatherDataDto> weatherDataJson = weatherAggregationDataService
+            ArrayList<WeatherDataDto> weatherData = weatherAggregationDataService
                     .windSpeedAggregation(city, countryCode);
-            return new ResponseEntity<>(weatherDataJson, HttpStatus.OK);
+            return new ResponseEntity<>(weatherData, HttpStatus.OK);
         } catch (WeatherForecastException e) {
-            LOGGER.error(e);
+            LOGGER.error("Parameters request: " + city + ", " + countryCode, e);
             return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
         }
     }
@@ -137,11 +138,11 @@ public class MainController {
     public ResponseEntity<?> humidityAggregation(@PathVariable String countryCode,
                                                               @PathVariable String city) {
         try {
-            ArrayList<WeatherDataDto> weatherDataJson = weatherAggregationDataService
+            ArrayList<WeatherDataDto> weatherData = weatherAggregationDataService
                     .humidityAggregation(city, countryCode);
-            return new ResponseEntity<>(weatherDataJson, HttpStatus.OK);
+            return new ResponseEntity<>(weatherData, HttpStatus.OK);
         } catch (WeatherForecastException e) {
-            LOGGER.error(e);
+            LOGGER.error("Parameters request: " + city + ", " + countryCode, e);
             return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
         }
     }
@@ -160,11 +161,11 @@ public class MainController {
     public ResponseEntity<?> fullWeatherAggregation(@PathVariable String countryCode,
                                                                  @PathVariable String city) {
         try {
-            ArrayList<WeatherDataDto> weatherDataJson = weatherAggregationDataService
+            ArrayList<WeatherDataDto> weatherData = weatherAggregationDataService
                     .fullWeatherAggregation(city, countryCode);
-            return new ResponseEntity<>(weatherDataJson, HttpStatus.OK);
+            return new ResponseEntity<>(weatherData, HttpStatus.OK);
         } catch (WeatherForecastException e) {
-            LOGGER.error(e);
+            LOGGER.error("Parameters request: " + city + ", " + countryCode, e);
             return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
         }
     }
@@ -183,11 +184,11 @@ public class MainController {
     public ResponseEntity<?> sunriseTimeAggregation(@PathVariable String countryCode,
                                                                  @PathVariable String city) {
         try {
-            ArrayList<WeatherDataDto> weatherDataJson = weatherAggregationDataService
+            ArrayList<WeatherDataDto> weatherData = weatherAggregationDataService
                     .sunriseTimeAggregation(city, countryCode);
-            return new ResponseEntity<>(weatherDataJson, HttpStatus.OK);
+            return new ResponseEntity<>(weatherData, HttpStatus.OK);
         } catch (WeatherForecastException e) {
-            LOGGER.error(e);
+            LOGGER.error("Parameters request: " + city + ", " + countryCode, e);
             return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
         }
     }
@@ -206,11 +207,11 @@ public class MainController {
     public ResponseEntity<?> directionWindAggregation(@PathVariable String countryCode,
                                                                    @PathVariable String city) {
         try {
-            ArrayList<WeatherDataDto> weatherDataJson = weatherAggregationDataService
+            ArrayList<WeatherDataDto> weatherData = weatherAggregationDataService
                     .directionWindAggregation(city, countryCode);
-            return new ResponseEntity<>(weatherDataJson, HttpStatus.OK);
+            return new ResponseEntity<>(weatherData, HttpStatus.OK);
         } catch (WeatherForecastException e) {
-            LOGGER.error(e);
+            LOGGER.error("Parameters request: " + city + ", " + countryCode, e);
             return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
         }
     }
@@ -229,11 +230,11 @@ public class MainController {
     public ResponseEntity<?> feelsLikeTemperatureAggregation(@PathVariable String countryCode,
                                                                           @PathVariable String city) {
         try {
-            ArrayList<WeatherDataDto> weatherDataJson = weatherAggregationDataService
+            ArrayList<WeatherDataDto> weatherData = weatherAggregationDataService
                     .feelsLikeTemperatureAggregation(city, countryCode);
-            return new ResponseEntity<>(weatherDataJson, HttpStatus.OK);
+            return new ResponseEntity<>(weatherData, HttpStatus.OK);
         } catch (WeatherForecastException e) {
-            LOGGER.error(e);
+            LOGGER.error("Parameters request: " + city + ", " + countryCode, e);
             return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
         }
     }
@@ -252,21 +253,22 @@ public class MainController {
     public ResponseEntity<?> weatherDescriptionAggregation(@PathVariable String countryCode,
                                                                         @PathVariable String city) {
         try {
-            ArrayList<WeatherDataDto> weatherDataJson = weatherAggregationDataService
+            ArrayList<WeatherDataDto> weatherData = weatherAggregationDataService
                     .weatherDescriptionAggregation(city, countryCode);
-            return new ResponseEntity<>(weatherDataJson, HttpStatus.OK);
+            return new ResponseEntity<>(weatherData, HttpStatus.OK);
         } catch (WeatherForecastException e) {
-            LOGGER.error(e);
+            LOGGER.error("Parameters request: " + city + ", " + countryCode, e);
             return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
         }
     }
 
     /**
      * Method fallbackMethod is called when a nonexistent URI is specified.
-     * @return ResponseEntity<String>
+     * @return ResponseEntity<?>
      */
-    @RequestMapping()
-    public ResponseEntity<String> fallbackMethod(){
-        return new ResponseEntity<String>("Page not found.", HttpStatus.NOT_FOUND);
+    @RequestMapping(method = RequestMethod.GET,
+            produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+    public ResponseEntity<?> homePage(){
+        return new ResponseEntity<>(new HomePage(), HttpStatus.OK);
     }
 }
