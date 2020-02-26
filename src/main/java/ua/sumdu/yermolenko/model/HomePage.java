@@ -20,16 +20,15 @@ public class HomePage {
         listRequests.add(new ApiInfo("Request for direction wind", "http://localhost:8081/directionWind/ua/Sumy"));
         listRequests.add(new ApiInfo("Request for weather description", "http://localhost:8081/weatherDescription/ua/Sumy"));
     }
-
-
+    
     @Data
     class ApiInfo {
         private String description;
-        private String uri;
+        private String example_uri;
 
         public ApiInfo(String description, String uri) {
             this.description = description;
-            this.uri = uri;
+            this.example_uri = uri;
         }
     }
 }
