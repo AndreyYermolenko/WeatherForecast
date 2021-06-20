@@ -21,7 +21,7 @@ import ua.sumdu.yermolenko.services.WeatherService;
  * @author AndreyYermolenko
  * Created on 01.02.2020
  */
-@Service
+//@Service
 public class DarkSkyWeatherServiceImpl implements WeatherService {
     @Value("${darksky.api.key}")
     private String apiKey;
